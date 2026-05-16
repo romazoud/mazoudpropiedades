@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasaciones | Mazoud Propiedades</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --negro-premium: #0D0D0D;
+            --rojo-intenso: #C1121F;
+            --gris-oscuro: #2B2B2B;
+            --gris-input: #1A1A1A;
+            --blanco: #FFFFFF;
+            --gris-texto: #A0A0A0;
+            --transicion: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--negro-premium); color: var(--blanco); font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+
+        /* HEADER */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-oscuro); backdrop-filter: blur(10px); }
+        .logo img { height: 55px; object-fit: contain; }
+        nav { display: flex; gap: 35px; }
+        nav a { color: var(--blanco); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transicion); position: relative; }
+        nav a.activo { color: var(--rojo-intenso); }
+        nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo-intenso); transition: var(--transicion); }
+        nav a:hover::after, nav a.activo::after { width: 100%; }
+
+        /* HERO TASACIONES */
+        .hero-tasaciones {
+            height: 50vh;
+            min-height: 400px;
+            /* Podés cambiar esta imagen por una de alguien tasando o una casa linda */
+            background: linear-gradient(rgba(13, 13, 13, 0.8), rgba(13, 13, 13, 0.95)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1600&auto=format&fit=crop') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            border-bottom: 4px solid var(--rojo-intenso);
+        }
+
+        .hero-tasaciones h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 5vw, 60px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .hero-tasaciones h1 span { color: var(--rojo-intenso); }
+        .hero-tasaciones p { color: var(--gris-texto); font-size: 18px; max-width: 700px; font-weight: 300; line-height: 1.6; }
+
+        /* SECCIÓN DEL PROCESO (Cómo trabajamos) */
+        .seccion-proceso {
+            padding: 80px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .titulo-seccion {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        .grid-proceso {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .tarjeta-paso {
+            background-color: var(--gris-oscuro);
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transicion);
+        }
+
+        .tarjeta-paso:hover {
+            transform: translateY(-10px);
+            border-color: rgba(193, 18, 31, 0.5);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        .numero-paso {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--rojo-intenso);
+            color: var(--blanco);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(193, 18, 31, 0.4);
+        }
+
+        .tarjeta-paso i {
+            font-size: 40px;
+            color: var(--blanco);
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .tarjeta-paso h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .tarjeta-paso p {
+            font-size: 14px;
+            color: var(--gris-texto);
+            line-height: 1.6;
+        }
+
+        /* SECCIÓN DEL FORMULARIO */
+        .seccion-formulario {
+            background-color: #111;
+            padding: 80px 5%;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .contenedor-formulario {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--gris-oscuro);
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .contenedor-formulario h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: var(--blanco);
+        }
+
+        .contenedor-formulario p.subtitulo-form {
+            color: var(--gris-texto);
+            margin-bottom: 30px;
+            font-size: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+
+        .fila-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grupo-input {
+            margin-bottom: 25px;
+        }
+
+        .grupo-input label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--blanco);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grupo-input input, .grupo-input select, .grupo-input textarea {
+            width: 100%;
+            background-color: var(--gris-input);
+            border: 1px solid transparent;
+            color: var(--blanco);
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            transition: var(--transicion);
+            outline: none;
+        }
+
+        .grupo-input input:focus, .grupo-input select:focus, .grupo-input textarea:focus {
+            border-color: var(--rojo-intenso);
+            background-color: #0a0a0a;
+            box-shadow: 0 0 10px rgba(193, 18, 31, 0.2);
+        }
+
+        .grupo-input textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-enviar {
+            background-color: var(--rojo-intenso);
+            color: var(--blanco);
+            border: none;
+            padding: 20px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transicion);
+            margin-top: 10px;
+        }
+
+        .btn-enviar:hover {
+            background-color: #900d16;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(193, 18, 31, 0.3);
+        }
+
+        /* FOOTER Y BOTONES FLOTANTES */
+        footer { padding: 45px 5%; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); font-size: 12px; background: var(--negro-premium); }
+        .botones-flotantes { position: fixed; bottom: 40px; right: 40px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .btn-flotante { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--blanco); font-size: 26px; text-decoration: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: transform 0.3s; border: none; cursor: pointer; }
+        .btn-flotante:hover { transform: scale(1.12); }
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-scroll-top { background-color: var(--rojo-intenso); display: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header { padding: 15px 5%; flex-direction: column; gap: 15px; }
+            nav { gap: 20px; flex-wrap: wrap; justify-content: center; }
+            .hero-tasaciones h1 { font-size: 28px; }
+            .fila-inputs { grid-template-columns: 1fr; gap: 0; }
+            .contenedor-formulario { padding: 30px; }
+            .botones-flotantes { bottom: 25px; right: 25px; }
+        }
+    </style>
+</head>
+<body id="top">
+
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="logoinmo.png" alt="Mazoud Propiedades"></a>
+        </div>
+        <nav>
+            <a href="articulos.html">Articulos</a>
+            <a href="tasaciones.html" class="activo">Tasaciones</a>
+            <a href="equipo.html">Formá parte de nuestro equipo</a>
+            <a href="contacto.html">Contacto</a>
+        </nav>
+    </header>
+
+    <section class="hero-tasaciones">
+        <h1>Conocé el <span>valor real</span> de tu propiedad</h1>
+        <p>Realizamos tasaciones profesionales, precisas y fundamentadas en el análisis actual del mercado inmobiliario para que tomes la mejor decisión.</p>
+    </section>
+
+    <section class="seccion-proceso">
+        <h2 class="titulo-seccion">Nuestro Método</h2>
+        
+        <div class="grid-proceso">
+            <div class="tarjeta-paso">
+                <div class="numero-paso">1</div>
+                <i class="far fa-clipboard"></i>
+                <h3>Solicitud</h3>
+                <p>Completás el formulario con los datos básicos de tu propiedad o nos contactás directamente por WhatsApp para coordinar.</p>
+            </div>
+
+            <div class="tarjeta-paso">
+                <div class="numero-paso">2</div>
+                <i class="fas fa-home"></i>
+                <h3>Visita Técnica</h3>
+                <p>Un corredor matriculado visita el inmueble para evaluar su estado general, distribución, iluminación y potencial comercial.</p>
+            </div>
+
+            <div class="tarjeta-paso">
+                <div class="numero-paso">3</div>
+                <i class="fas fa-chart-line"></i>
+                <h3>Análisis y Entrega</h3>
+                <p>Estudiamos los valores comparativos de la zona y te entregamos un informe profesional con el precio real sugerido de mercado.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion-formulario">
+        <div class="contenedor-formulario">
+            <h2>Solicitar Tasación</h2>
+            <p class="subtitulo-form">Completá los datos y un asesor se comunicará con vos a la brevedad para coordinar una visita.</p>
+            
+            <form action="#" method="POST">
+                
+                <h3 style="font-family: 'Montserrat'; font-size: 16px; margin-bottom: 20px; color: var(--rojo-intenso);">Tus Datos</h3>
+                <div class="fila-inputs">
+                    <div class="grupo-input">
+                        <label for="nombre">Nombre y Apellido</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="telefono">Teléfono / WhatsApp</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: 11 1234 5678" required>
+                    </div>
+                </div>
+
+                <h3 style="font-family: 'Montserrat'; font-size: 16px; margin: 30px 0 20px 0; color: var(--rojo-intenso); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">Datos del Inmueble</h3>
+                
+                <div class="fila-inputs">
+                    <div class="grupo-input">
+                        <label for="tipo_propiedad">Tipo de Propiedad</label>
+                        <select id="tipo_propiedad" name="tipo_propiedad" required>
+                            <option value="" disabled selected>Seleccioná una opción...</option>
+                            <option value="casa">Casa / Chalet</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="terreno">Lote / Terreno</option>
+                            <option value="galpon">Galpón / Depósito</option>
+                        </select>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="operacion">Motivo de la Tasación</label>
+                        <select id="operacion" name="operacion" required>
+                            <option value="" disabled selected>Seleccioná una opción...</option>
+                            <option value="venta">Quiero vender</option>
+                            <option value="alquiler">Quiero alquilar</option>
+                            <option value="saber_valor">Solo quiero saber el valor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fila-inputs">
+                    <div class="grupo-input">
+                        <label for="zona">Localidad / Zona</label>
+                        <input type="text" id="zona" name="zona" placeholder="Ej: Merlo Centro, Castelar..." required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="direccion">Dirección exacta</label>
+                        <input type="text" id="direccion" name="direccion" placeholder="Calle y altura" required>
+                    </div>
+                </div>
+
+                <div class="grupo-input">
+                    <label for="comentarios">Comentarios adicionales (Opcional)</label>
+                    <textarea id="comentarios" name="comentarios" placeholder="Contanos detalles importantes (ej: refaccionada a nuevo, pileta, cuántos ambientes tiene...)"></textarea>
+                </div>
+
+                <button type="submit" class="btn-enviar">Enviar Solicitud</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        © 2026 Mazoud Propiedades — Todos los derechos reservados.
+    </footer>
+
+    <div class="botones-flotantes">
+        <a href="https://wa.me/5491100000000" target="_blank" class="btn-flotante btn-whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <button type="button" class="btn-flotante btn-scroll-top" id="scrollTopBtn" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
+    </div>
+
+    <script>
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollTopBtn.style.display = "flex";
+            } else {
+                scrollTopBtn.style.display = "none";
+            }
+        };
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

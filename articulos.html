@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inmobiliario — Mazoud Propiedades</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --negro-premium: #0D0D0D;
+            --rojo-intenso: #C1121F;
+            --gris-oscuro: #2B2B2B;
+            --blanco: #FFFFFF;
+            --gris-texto: #A0A0A0;
+            --transicion: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--negro-premium); color: var(--blanco); font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+
+        /* HEADER */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-oscuro); backdrop-filter: blur(10px); }
+        .logo img { height: 55px; object-fit: contain; }
+        nav { display: flex; gap: 35px; }
+        nav a { color: var(--blanco); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transicion); position: relative; cursor: pointer; }
+        nav a.activo { color: var(--rojo-intenso); }
+        nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo-intenso); transition: var(--transicion); }
+        nav a:hover::after, nav a.activo::after { width: 100%; }
+
+        /* VISTA LISTADO: HERO Y GRILLA */
+        .hero-interno { height: 40vh; min-height: 300px; background: linear-gradient(rgba(13, 13, 13, 0.7), rgba(13, 13, 13, 0.9)), url('foto-articulos-bg.jpg') center/cover no-repeat; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; border-bottom: 4px solid var(--rojo-intenso); }
+        .hero-interno h1 { font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+        .hero-interno p { font-size: 18px; color: var(--gris-texto); font-weight: 300; max-width: 600px; }
+
+        .contenedor-articulos { max-width: 1200px; margin: 0 auto; padding: 80px 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; }
+        .tarjeta-articulo { background-color: var(--gris-oscuro); border-radius: 12px; overflow: hidden; border: 1px solid transparent; transition: var(--transicion); display: flex; flex-direction: column; cursor: pointer; }
+        .tarjeta-articulo:hover { transform: translateY(-5px); border-color: rgba(193, 18, 31, 0.5); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); }
+        .imagen-articulo { width: 100%; height: 220px; overflow: hidden; }
+        .imagen-articulo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .tarjeta-articulo:hover .imagen-articulo img { transform: scale(1.05); }
+        .contenido-articulo { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
+        .etiqueta { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--rojo-intenso); text-transform: uppercase; margin-bottom: 10px; }
+        .contenido-articulo h2 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 15px; line-height: 1.3; }
+        .contenido-articulo p { font-size: 15px; color: var(--gris-texto); line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
+        
+        .btn-leer-mas { align-self: flex-start; color: var(--blanco); font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 8px; border: none; background: none; cursor: pointer; transition: var(--transicion); }
+        .btn-leer-mas i { color: var(--rojo-intenso); transition: transform 0.3s ease; }
+        .tarjeta-articulo:hover .btn-leer-mas { color: var(--rojo-intenso); }
+        .tarjeta-articulo:hover .btn-leer-mas i { transform: translateX(5px); }
+
+        /* VISTAS DE LECTURA DE ARTÍCULOS */
+        .vista-articulo { display: none; /* ESTO ES LA MAGIA: Oculta los artículos hasta que hacés clic */ }
+        .articulo-hero { height: 50vh; min-height: 400px; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 8% 60px 8%; background-position: center; background-size: cover; background-repeat: no-repeat; }
+        
+        /* Fondos específicos para cada artículo */
+        #articulo-1 .articulo-hero { background-image: linear-gradient(to bottom, rgba(13,13,13,0.4), rgba(13,13,13,1)), url('foto-articulo1.jpg'); }
+        #articulo-2 .articulo-hero { background-image: linear-gradient(to bottom, rgba(13,13,13,0.4), rgba(13,13,13,1)), url('foto-articulo2.jpg'); }
+        #articulo-3 .articulo-hero { background-image: linear-gradient(to bottom, rgba(13,13,13,0.4), rgba(13,13,13,1)), url('foto-articulo3.jpg'); }
+        #articulo-4 .articulo-hero { background-image: linear-gradient(to bottom, rgba(13,13,13,0.4), rgba(13,13,13,1)), url('foto-articulo4.jpg'); }
+
+        .btn-volver { color: var(--blanco); font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 30px; align-self: flex-start; border: none; background: none; cursor: pointer; transition: var(--transicion); font-family: 'Poppins', sans-serif; }
+        .btn-volver:hover { color: var(--rojo-intenso); }
+        .articulo-hero h1 { font-family: 'Montserrat', sans-serif; font-size: 3.5rem; font-weight: 800; line-height: 1.1; max-width: 900px; margin: 20px 0; }
+        .meta-datos { font-size: 14px; color: var(--gris-texto); display: flex; gap: 20px; align-items: center; }
+        .meta-datos i { color: var(--rojo-intenso); }
+
+        .contenedor-lectura { max-width: 800px; margin: 0 auto; padding: 60px 20px; line-height: 1.7; }
+        .contenido-texto p { font-size: 18px; color: #d1d1d1; margin-bottom: 25px; font-weight: 300; }
+        .contenido-texto > p:first-of-type::first-letter { font-family: 'Montserrat', sans-serif; font-size: 60px; color: var(--rojo-intenso); float: left; line-height: 0.8; padding-right: 12px; font-weight: 700; }
+        .contenido-texto h2 { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 700; margin: 50px 0 20px 0; color: var(--blanco); border-left: 4px solid var(--rojo-intenso); padding-left: 15px; }
+        .contenido-texto ul { margin-bottom: 30px; padding-left: 20px; }
+        .contenido-texto li { font-size: 18px; color: #d1d1d1; margin-bottom: 10px; font-weight: 300; list-style-type: square; }
+        .contenido-texto li::marker { color: var(--rojo-intenso); }
+        .cita-destacada { background-color: var(--gris-oscuro); border-left: 4px solid var(--rojo-intenso); padding: 30px; margin: 40px 0; font-size: 20px; font-style: italic; color: var(--blanco); }
+
+        .cta-final { background-color: var(--gris-oscuro); padding: 40px; border-radius: 12px; text-align: center; margin-top: 50px; border: 1px solid rgba(193, 18, 31, 0.2); }
+        .cta-final h3 { font-family: 'Montserrat', sans-serif; font-size: 24px; margin-bottom: 15px; }
+        .btn-cta { display: inline-block; background-color: var(--rojo-intenso); color: var(--blanco); text-decoration: none; padding: 15px 35px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; border-radius: 4px; transition: var(--transicion); margin-top: 15px; }
+        .btn-cta:hover { background-color: #900d16; }
+
+        /* BOTONES FLOTANTES */
+        .botones-flotantes { position: fixed; bottom: 40px; right: 40px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .btn-flotante { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--blanco); font-size: 26px; text-decoration: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: transform 0.3s; border: none; cursor: pointer; }
+        .btn-flotante:hover { transform: scale(1.12); }
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-scroll-top { background-color: var(--rojo-intenso); display: none; }
+
+        @media (max-width: 768px) {
+            header { padding: 15px 5%; flex-direction: column; gap: 15px; }
+            nav { gap: 20px; flex-wrap: wrap; justify-content: center; }
+            .articulo-hero h1 { font-size: 2rem; }
+            .botones-flotantes { bottom: 25px; right: 25px; }
+        }
+    </style>
+</head>
+<body id="top">
+
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="../logoinmo.png" alt="Mazoud Propiedades"></a>
+        </div>
+        <nav>
+            <a class="activo" onclick="volverAlListado()">Articulos</a>
+            <a href="tasaciones.html">Tasaciones</a>
+            <a href="equipo.html">Formá parte de nuestro equipo</a>
+            <a href="contacto.html">Contacto</a>
+        </nav>
+    </header>
+
+    <main id="vista-listado">
+        <section class="hero-interno">
+            <h1>Qué tener en cuenta</h1>
+            <p>Consejos de expertos, tendencias del mercado y guías para asegurar tu mejor inversión inmobiliaria.</p>
+        </section>
+
+        <section class="contenedor-articulos">
+            <article class="tarjeta-articulo" onclick="abrirArticulo('articulo-1')">
+                <div class="imagen-articulo"><img src="articulo1.png" alt="Firma de contrato"></div>
+                <div class="contenido-articulo">
+                    <span class="etiqueta">Compradores</span>
+                    <h2>5 claves antes de comprar tu primera propiedad</h2>
+                    <p>Todo lo que necesitás saber para dar este gran paso con total seguridad, calculando costos reales y evitando sorpresas.</p>
+                    <button class="btn-leer-mas">Leer artículo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </article>
+
+            <article class="tarjeta-articulo" onclick="abrirArticulo('articulo-2')">
+                <div class="imagen-articulo"><img src="articulo2.jpg" alt="Interior elegante"></div>
+                <div class="contenido-articulo">
+                    <span class="etiqueta">Vendedores</span>
+                    <h2>¿Cómo preparar tu casa para una tasación exitosa?</h2>
+                    <p>Descubrí cómo el orden, la iluminación y pequeños detalles pueden aumentar significativamente el valor percibido de tu inmueble.</p>
+                    <button class="btn-leer-mas">Leer artículo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </article>
+
+            <article class="tarjeta-articulo" onclick="abrirArticulo('articulo-3')">
+                <div class="imagen-articulo"><img src="articulo3.avif" alt="Edificios modernos"></div>
+                <div class="contenido-articulo">
+                    <span class="etiqueta">Mercado</span>
+                    <h2>Tendencias del mercado inmobiliario en 2026</h2>
+                    <p>Análisis de las zonas con mayor proyección, tecnologías en el hogar y por qué este año es estratégico para invertir en pozo.</p>
+                    <button class="btn-leer-mas">Leer artículo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </article>
+
+            <article class="tarjeta-articulo" onclick="abrirArticulo('articulo-4')">
+                <div class="imagen-articulo"><img src="articulo4.webp" alt="Documentación"></div>
+                <div class="contenido-articulo">
+                    <span class="etiqueta">Alquileres</span>
+                    <h2>Documentación necesaria para alquilar sin demoras</h2>
+                    <p>Guía práctica con los requisitos legales y garantías aceptadas hoy en día para agilizar tu mudanza.</p>
+                    <button class="btn-leer-mas">Leer artículo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <main id="articulo-1" class="vista-articulo">
+        <section class="articulo-hero">
+            <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver a artículos</button>
+            <span class="etiqueta" style="color:white; background:var(--rojo-intenso); padding:5px 10px; width:fit-content; border-radius:4px;">Compradores</span>
+            <h1>5 claves antes de comprar tu primera propiedad</h1>
+            <div class="meta-datos">
+                <span><i class="far fa-calendar-alt"></i> Mayo 2026</span>
+                <span><i class="far fa-clock"></i> 4 min de lectura</span>
+            </div>
+        </section>
+
+        <section class="contenedor-lectura">
+            <div class="contenido-texto">
+                <p>Adquirir tu primer inmueble es uno de los hitos financieros y personales más importantes de la vida. Sin embargo, el entusiasmo inicial puede nublar el juicio si no se cuenta con la información y el asesoramiento adecuado. En un mercado dinámico, estar preparado hace la diferencia entre una excelente inversión y un dolor de cabeza.</p>
+                <p>Desde nuestra experiencia en Mazoud Propiedades, hemos acompañado a cientos de clientes en este proceso. Te detallamos los cinco aspectos fundamentales:</p>
+
+                <h2>1. Definí tu presupuesto real</h2>
+                <p>Es común enfocarse únicamente en el valor de publicación, pero existen gastos asociados que deben contemplarse. Tené en cuenta honorarios, gastos de escrituración e impuestos de sellos.</p>
+
+                <h2>2. Ubicación vs. Espacio</h2>
+                <p>Analizá tu estilo de vida: ¿Preferís caminar al trabajo o tener un jardín amplio? Recordá que la ubicación es el único factor de la propiedad que no se puede modificar a futuro.</p>
+                
+                <div class="cita-destacada">"Una propiedad se puede remodelar por completo, pero su ubicación y el entorno del barrio son permanentes. Elegí con visión de futuro."</div>
+
+                <h2>3. Inspección minuciosa</h2>
+                <p>No te dejes llevar solo por la estética. Comprobá la presión del agua, el estado del tablero eléctrico, la existencia de humedad y la antigüedad de los caños.</p>
+
+                <h2>4. Revisión de documentación</h2>
+                <p>Solicitá informes de dominio para corroborar que el inmueble no esté embargado y que los titulares registrales sean quienes firman. Revisá el libre deuda de expensas.</p>
+
+                <h2>5. Asesoramiento profesional</h2>
+                <p>Contar con un corredor inmobiliario matriculado te garantiza transparencia y protege tu patrimonio. En Mazoud Propiedades nos especializamos en hacer de este proceso una experiencia exclusiva y segura.</p>
+            </div>
+            
+            <div class="cta-final">
+                <h3>¿Buscás tu primer hogar?</h3>
+                <p>Contactate con nuestro equipo para ver propiedades exclusivas.</p>
+                <a href="contacto.html" class="btn-cta">Agendar Asesoramiento</a>
+            </div>
+        </section>
+    </main>
+
+    <main id="articulo-2" class="vista-articulo">
+        <section class="articulo-hero">
+            <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver a artículos</button>
+            <span class="etiqueta" style="color:white; background:var(--rojo-intenso); padding:5px 10px; width:fit-content; border-radius:4px;">Vendedores</span>
+            <h1>¿Cómo preparar tu casa para una tasación exitosa?</h1>
+            <div class="meta-datos">
+                <span><i class="far fa-calendar-alt"></i> Abril 2026</span>
+                <span><i class="far fa-clock"></i> 3 min de lectura</span>
+            </div>
+        </section>
+
+        <section class="contenedor-lectura">
+            <div class="contenido-texto">
+                <p>La primera impresión es la que cuenta, y esto es especialmente cierto cuando un profesional visita tu inmueble para determinar su valor de mercado. Una tasación no solo se basa en los metros cuadrados o la ubicación, sino también en el estado general de conservación y la presentación visual de los ambientes.</p>
+                
+                <h2>1. Despersonalizar y ordenar</h2>
+                <p>El objetivo es que el futuro comprador pueda imaginarse viviendo allí. Retirá fotografías familiares excesivas, imanes de la heladera y objetos muy personales. Un espacio despejado siempre parece más grande.</p>
+
+                <h2>2. Iluminación estratégica</h2>
+                <p>Abrí todas las persianas y cortinas. La luz natural suma muchísimo valor. Si la tasación es por la tarde, asegurate de que todas las bombitas funcionen y usá luces cálidas para crear ambientes acogedores.</p>
+                
+                <div class="cita-destacada">"Las pequeñas reparaciones estéticas (como una canilla que gotea o pintura descascarada) tienen un alto retorno de inversión antes de tasar."</div>
+
+                <h2>3. Limpieza profunda y ventilación</h2>
+                <p>El olor a encierro o humedad juega muy en contra. Ventilá la propiedad horas antes y asegurate de que baños y cocina estén impecables, ya que son los dos ambientes que más evalúan los compradores.</p>
+            </div>
+
+            <div class="cta-final">
+                <h3>¿Querés saber el valor real de tu propiedad?</h3>
+                <p>En Mazoud Propiedades realizamos tasaciones profesionales y precisas.</p>
+                <a href="tasaciones.html" class="btn-cta">Solicitar Tasación</a>
+            </div>
+        </section>
+    </main>
+
+    <main id="articulo-3" class="vista-articulo">
+        <section class="articulo-hero">
+            <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver a artículos</button>
+            <span class="etiqueta" style="color:white; background:var(--rojo-intenso); padding:5px 10px; width:fit-content; border-radius:4px;">Mercado</span>
+            <h1>Tendencias del mercado inmobiliario en 2026</h1>
+            <div class="meta-datos">
+                <span><i class="far fa-calendar-alt"></i> Marzo 2026</span>
+                <span><i class="far fa-clock"></i> 4 min de lectura</span>
+            </div>
+        </section>
+
+        <section class="contenedor-lectura">
+            <div class="contenido-texto">
+                <p>El sector de bienes raíces se encuentra en constante evolución. Entender hacia dónde se mueve el mercado es vital tanto para inversores experimentados como para familias que buscan proteger sus ahorros en ladrillos durante este año.</p>
+                
+                <h2>1. El boom de las "Smart Homes"</h2>
+                <p>La tecnología domótica ya no es un lujo inalcanzable. Las propiedades que incluyen cerraduras inteligentes, climatización automatizada y sistemas de seguridad integrados se tasan y venden hasta un 15% más rápido que las tradicionales.</p>
+
+                <h2>2. Espacios flexibles</h2>
+                <p>Con la consolidación del trabajo híbrido, los compradores exigen inmuebles que ofrezcan un "espacio comodín". Ya sea un balcón aterrazado cerramiento o un segundo dormitorio pequeño, tener un lugar exclusivo para home office es un requisito no negociable para el 60% de los clientes.</p>
+
+                <h2>3. Inversión en pozo: El resguardo ideal</h2>
+                <p>Invertir en proyectos desde el pozo sigue siendo la estrategia más rentable en 2026. Permite ingresar pagando en cuotas y obtener una capitalización de entre el 20% y el 30% al momento de la entrega de llaves.</p>
+            </div>
+
+            <div class="cta-final">
+                <h3>Asesoramiento en Inversiones</h3>
+                <p>Conocé nuestros desarrollos exclusivos y maximizá tu rentabilidad.</p>
+                <a href="contacto.html" class="btn-cta">Hablar con un asesor</a>
+            </div>
+        </section>
+    </main>
+
+    <main id="articulo-4" class="vista-articulo">
+        <section class="articulo-hero">
+            <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver a artículos</button>
+            <span class="etiqueta" style="color:white; background:var(--rojo-intenso); padding:5px 10px; width:fit-content; border-radius:4px;">Alquileres</span>
+            <h1>Documentación necesaria para alquilar sin demoras</h1>
+            <div class="meta-datos">
+                <span><i class="far fa-calendar-alt"></i> Febrero 2026</span>
+                <span><i class="far fa-clock"></i> 3 min de lectura</span>
+            </div>
+        </section>
+
+        <section class="contenedor-lectura">
+            <div class="contenido-texto">
+                <p>Encontrar el departamento ideal es solo la mitad del camino. En un mercado competitivo, el candidato que presenta su documentación de forma rápida, ordenada y completa suele ser quien finalmente firma el contrato de locación.</p>
+                
+                <h2>Lo que tenés que tener preparado</h2>
+                <p>Para no perder la propiedad que te gustó, te recomendamos tener armada una carpeta (física o digital en PDF) con los siguientes documentos:</p>
+                
+                <ul>
+                    <li><strong>DNI original y copia:</strong> De todas las personas que van a figurar como inquilinos.</li>
+                    <li><strong>Demostración de ingresos:</strong> Los últimos 3 recibos de sueldo si estás en relación de dependencia. Si sos monotributista, constancia de inscripción y la última certificación de ingresos validada por contador público.</li>
+                    <li><strong>Garantía:</strong> Si presentás garantía propietaria (inmueble de un familiar directo), necesitás la fotocopia de la escritura y el DNI de los garantes.</li>
+                </ul>
+
+                <h2>¿No tenés garantía propietaria?</h2>
+                <p>Hoy en día, la mayoría de los propietarios aceptan Seguros de Caución. Es un trámite rápido que se aprueba en 48 horas demostrando tus ingresos. En Mazoud Propiedades trabajamos con las principales aseguradoras para facilitarte el proceso.</p>
+            </div>
+
+            <div class="cta-final">
+                <h3>¿Buscás alquiler?</h3>
+                <p>Explorá nuestro catálogo de propiedades disponibles hoy.</p>
+                <a href="departamentos.html" class="btn-cta">Ver Alquileres</a>
+            </div>
+        </section>
+    </main>
+
+    <div class="botones-flotantes">
+        <a href="https://wa.me/5491100000000" target="_blank" class="btn-flotante btn-whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <button type="button" class="btn-flotante btn-scroll-top" id="scrollTopBtn" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
+    </div>
+
+    <script>
+        function abrirArticulo(idArticulo) {
+            document.getElementById('vista-listado').style.display = 'none';
+            document.getElementById(idArticulo).style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function volverAlListado() {
+            const articulos = document.querySelectorAll('.vista-articulo');
+            articulos.forEach(art => art.style.display = 'none');
+            document.getElementById('vista-listado').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollTopBtn.style.display = "flex";
+            } else {
+                scrollTopBtn.style.display = "none";
+            }
+        };
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

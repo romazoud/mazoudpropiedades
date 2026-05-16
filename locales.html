@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Locales | Mazoud Propiedades</title>
+
+<link rel="icon" type="image/png" href="logoinmo.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --negro:#0D0D0D;
+  --rojo:#C1121F;
+  --gris:#1A1A1A;
+  --blanco:#FFFFFF;
+  --texto:rgba(255,255,255,0.7);
+}
+
+body{
+  font-family:'Montserrat',sans-serif;
+  background:var(--negro);
+  color:var(--blanco);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* HEADER */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:90px;
+  background:rgba(13,13,13,0.97);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(193,18,31,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 5%;
+  z-index:1000;
+}
+
+.logo img{
+  height:145px;
+}
+
+nav{
+  display:flex;
+  gap:30px;
+}
+
+nav a{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-weight:600;
+  color:rgba(255,255,255,0.7);
+  transition:.3s;
+}
+
+nav a:hover{
+  color:var(--rojo);
+}
+
+/* HERO */
+
+.hero{
+  min-height:55vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:160px 5% 100px;
+  background:
+  linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.82)),
+  url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1400&auto=format&fit=crop');
+  background-size:cover;
+  background-position:center;
+}
+
+.hero-content h1{
+  font-size:clamp(42px,7vw,80px);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:18px;
+}
+
+.hero-content h1 span{
+  color:var(--rojo);
+}
+
+.hero-content p{
+  color:var(--texto);
+  font-size:15px;
+  max-width:650px;
+  margin:auto;
+  line-height:1.8;
+}
+
+/* FILTROS */
+
+.filtros{
+  padding:50px 5%;
+  background:#111;
+  border-top:1px solid rgba(255,255,255,0.05);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.filtro-box{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+.filtro-box select,
+.filtro-box input{
+  background:#1a1a1a;
+  border:1px solid rgba(255,255,255,0.08);
+  height:55px;
+  padding:0 16px;
+  color:#fff;
+  outline:none;
+  border-radius:4px;
+  font-size:13px;
+}
+
+.buscar-btn{
+  background:var(--rojo);
+  border:none;
+  color:#fff;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  border-radius:4px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.buscar-btn:hover{
+  background:#a50e1a;
+}
+
+/* GRID */
+
+.propiedades{
+  padding:80px 5%;
+}
+
+.grid{
+  max-width:1300px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+}
+
+/* CARD */
+
+.card{
+  background:var(--gris);
+  overflow:hidden;
+  transition:.35s;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(193,18,31,0.4);
+}
+
+.card-img{
+  height:300px;
+  overflow:hidden;
+}
+
+.card-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.5s;
+}
+
+.card:hover .card-img img{
+  transform:scale(1.05);
+}
+
+.card-body{
+  padding:24px;
+}
+
+.tag{
+  display:inline-block;
+  background:rgba(193,18,31,0.1);
+  border:1px solid rgba(193,18,31,0.4);
+  color:var(--rojo);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:2px;
+  padding:8px 14px;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+
+.card-body h3{
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.info{
+  color:var(--texto);
+  font-size:13px;
+  line-height:1.8;
+  margin-bottom:18px;
+}
+
+.precio{
+  font-size:30px;
+  font-weight:900;
+  margin-bottom:22px;
+}
+
+.btns{
+  display:flex;
+  gap:12px;
+}
+
+.btn{
+  flex:1;
+  height:48px;
+  border:none;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  transition:.3s;
+}
+
+.btn-rojo{
+  background:var(--rojo);
+  color:#fff;
+}
+
+.btn-rojo:hover{
+  background:#a50e1a;
+}
+
+.btn-outline{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.2);
+  color:#fff;
+}
+
+.btn-outline:hover{
+  border-color:var(--rojo);
+  color:var(--rojo);
+}
+
+/* FOOTER */
+
+footer{
+  padding:45px 5%;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.3);
+  font-size:12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .filtro-box{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:768px){
+
+  nav{
+    display:none;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .filtro-box{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <a href="index.html" class="logo">
+    <img src="logoinmo.png" alt="Mazoud Propiedades">
+  </a>
+
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="departamentos.html">Departamentos</a>
+    <a href="casas.html">Casas</a>
+    <a href="#">Locales</a>
+    <a href="articulos.html">Articulos</a>
+    <a href="tasaciones.html">Tasaciones</a>
+    <a href="contacto.html">Contacto</a>
+  </nav>
+
+</header>
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <h1>Locales y<br><span>Oficinas</span></h1>
+
+    <p>
+      Espacios comerciales estratégicos para potenciar
+      tu negocio en las mejores ubicaciones.
+    </p>
+
+  </div>
+
+</section>
+
+<!-- FILTROS -->
+
+<section class="filtros">
+
+  <div class="filtro-box">
+
+    <select>
+      <option>Operación</option>
+      <option>Venta</option>
+      <option>Alquiler</option>
+    </select>
+
+    <select>
+      <option>Zona</option>
+      <option>Merlo</option>
+      <option>Morón</option>
+      <option>Castelar</option>
+      <option>Ituzaingó</option>
+    </select>
+
+    <input type="text" placeholder="Precio máximo">
+
+    <button class="buscar-btn">
+      Buscar
+    </button>
+
+  </div>
+
+</section>
+
+<!-- PROPIEDADES -->
+
+<section class="propiedades">
+
+  <div class="grid">
+
+    <!-- CARD 1 -->
+
+    <div class="card">
+
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop">
+      </div>
+
+      <div class="card-body">
+
+        <div class="tag">Alquiler</div>
+
+        <h3>Oficina Corporativa</h3>
+
+        <div class="info">
+          📍 Morón Centro<br>
+          🏢 Piso completo<br>
+          🚗 Cocheras privadas<br>
+          📐 180 m²
+        </div>
+
+        <div class="precio">
+          USD 2.500
+        </div>
+
+        <div class="btns">
+
+          <button class="btn btn-rojo">
+            Consultar
+          </button>
+
+          <button class="btn btn-outline">
+            Ver más
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CARD 2 -->
+
+    <div class="card">
+
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&auto=format&fit=crop">
+      </div>
+
+      <div class="card-body">
+
+        <div class="tag">Venta</div>
+
+        <h3>Local Comercial Premium</h3>
+
+        <div class="info">
+          📍 Ituzaingó Norte<br>
+          🚪 Frente vidriado<br>
+          📦 Depósito<br>
+          📐 140 m²
+        </div>
+
+        <div class="precio">
+          USD 280.000
+        </div>
+
+        <div class="btns">
+
+          <button class="btn btn-rojo">
+            Consultar
+          </button>
+
+          <button class="btn btn-outline">
+            Ver más
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CARD 3 -->
+
+    <div class="card">
+
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop">
+      </div>
+
+      <div class="card-body">
+
+        <div class="tag">Alquiler</div>
+
+        <h3>Espacio de Coworking</h3>
+
+        <div class="info">
+          📍 Castelar<br>
+          💻 Oficinas privadas<br>
+          ☕ Sala de reuniones<br>
+          📐 95 m²
+        </div>
+
+        <div class="precio">
+          $980.000
+        </div>
+
+        <div class="btns">
+
+          <button class="btn btn-rojo">
+            Consultar
+          </button>
+
+          <button class="btn btn-outline">
+            Ver más
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<footer id="contacto">
+
+  © 2025 Mazoud Propiedades — Todos los derechos reservados.
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mazoud Propiedades </title>
+<link rel="icon" type="image/png" href="logoinmo.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & BASE ─────────────────────────────────── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --negro:      #0D0D0D;
+    --rojo:       #C1121F;
+    --rojo-hover: #a50e1a;
+    --gris:       #2B2B2B;
+    --blanco:     #FFFFFF;
+    --texto-muted: rgba(255,255,255,0.55);
+    --border:     rgba(255,255,255,0.1);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--negro);
+    color: var(--blanco);
+    overflow-x: hidden;
+  }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: 'Montserrat', sans-serif; cursor: pointer; }
+  input, select, textarea { font-family: 'Montserrat', sans-serif; }
+
+  /* ── HEADER ───────────────────────────────────────── */
+  header {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    background: rgba(13,13,13,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(193,18,31,0.25);
+    height: 90px;
+    display: flex; align-items: center;
+    padding: 0 5%;
+    justify-content: space-between;
+    transition: background 0.3s;
+  }
+  .logo-wrap {
+    display: flex; align-items: center;
+  }
+  .logo-wrap img {
+    height: 55px;
+    width: auto;
+    display: block;
+}
+  nav {
+    display: flex; align-items: center; gap: 32px;
+  }
+  nav a {
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: rgba(255,255,255,0.75);
+    transition: color 0.2s; white-space: nowrap;
+  }
+  nav a:hover { color: var(--rojo); }
+  .nav-cta {
+    background: var(--rojo) !important;
+    color: #fff !important;
+    padding: 10px 22px;
+    border-radius: 3px;
+    font-size: 11px !important;
+  }
+  .nav-cta:hover { background: var(--rojo-hover) !important; }
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px; cursor: pointer;
+    background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 24px; height: 2px; background: #fff; transition: 0.3s;
+  }
+
+  /* ── MOBILE NAV ───────────────────────────────────── */
+  .mobile-nav {
+    display: none; position: fixed; top: 90px; left: 0; width: 100%;
+    background: rgba(13,13,13,0.98); z-index: 999;
+    flex-direction: column; padding: 24px 5%; gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-nav a {
+    display: block; padding: 16px 0; font-size: 13px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.75);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: color 0.2s;
+  }
+  .mobile-nav a:last-child { border-bottom: none; }
+  .mobile-nav a:hover { color: var(--rojo); }
+  .mobile-nav.open { display: flex; }
+
+  /* ── HERO ─────────────────────────────────────────── */
+  #inicio {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 100px 5% 80px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, rgba(193,18,31,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 10% 80%, rgba(193,18,31,0.06) 0%, transparent 50%),
+                var(--negro);
+  }
+  /* Grilla de fondo sutil */
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .hero-content {
+    position: relative; text-align: center;
+    max-width: 820px; width: 100%;
+  }
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid rgba(193,18,31,0.5);
+    background: rgba(193,18,31,0.08);
+    color: var(--rojo);
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 8px 20px; border-radius: 2px;
+    margin-bottom: 32px;
+  }
+  .hero-content h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900; line-height: 1.02;
+    text-transform: uppercase; letter-spacing: -1px;
+    margin-bottom: 22px;
+  }
+  .hero-content h1 span { color: var(--rojo); }
+  .hero-content p {
+    font-size: 15px; color: var(--texto-muted); font-weight: 300;
+    line-height: 1.75; max-width: 540px; margin: 0 auto 48px;
+  }
+
+  /* ── SEARCH BOX ───────────────────────────────────── */
+  .search-box {
+    display: flex; align-items: stretch;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 6px; overflow: hidden;
+    max-width: 680px; margin: 0 auto 28px;
+  }
+  .search-select {
+    background: transparent; border: none;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    font-size: 13px; font-weight: 500;
+    padding: 16px 18px; outline: none;
+    cursor: pointer; min-width: 140px;
+    -webkit-appearance: none; appearance: none;
+  }
+  .search-select option { background: #1a1a1a; color: #fff; }
+  .search-input {
+    flex: 1; background: transparent; border: none;
+    color: #fff; font-size: 13px; padding: 16px 18px; outline: none;
+  }
+  .search-input::placeholder { color: rgba(255,255,255,0.3); }
+  .search-btn {
+    background: var(--rojo); color: #fff; border: none;
+    font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; padding: 16px 28px;
+    white-space: nowrap; transition: background 0.2s;
+  }
+  .search-btn:hover { background: var(--rojo-hover); }
+  .search-chips {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.5);
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 6px 16px; border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .chip:hover { border-color: var(--rojo); color: var(--rojo); background: rgba(193,18,31,0.06); }
+
+  /* ── SCROLL ARROW ─────────────────────────────────── */
+  .scroll-cta {
+    position: absolute; bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.25); font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; cursor: pointer;
+    animation: float 2.2s ease-in-out infinite;
+  }
+  .scroll-cta svg { width: 20px; height: 20px; }
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ── SECCIONES GENÉRICAS ──────────────────────────── */
+  section { padding: 88px 5%; }
+  .sec-label {
+    display: block; width: 38px; height: 2px;
+    background: var(--rojo); margin-bottom: 20px;
+  }
+  .sec-head { text-align: center; margin-bottom: 56px; }
+  .sec-head .sec-label { margin: 0 auto 20px; }
+  .sec-head h2 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .sec-head p { font-size: 14px; color: var(--texto-muted); font-weight: 300; }
+
+  /* ── CATEGORÍAS ───────────────────────────────────── */
+  #propiedades { padding-top: 24px; }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .cat-card {
+    position: relative; overflow: hidden;
+    aspect-ratio: 3/4; cursor: pointer;
+    background: var(--gris);
+    transition: transform 0.4s;
+  }
+  .cat-card:hover { transform: scale(1.01); }
+  /* Imagen placeholder con IA — reemplazar con <img> real */
+  .cat-img {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 90px; opacity: 0.05;
+    transition: transform 0.6s ease;
+  }
+  .cat-card:hover .cat-img { transform: scale(1.08); }
+  .cat-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 55%, transparent 100%);
+    transition: background 0.35s;
+  }
+  .cat-card:hover .cat-overlay {
+    background: linear-gradient(to top, rgba(193,18,31,0.75) 0%, rgba(0,0,0,0.4) 55%, transparent 100%);
+  }
+  .cat-arrow {
+    position: absolute; top: 20px; right: 20px;
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .cat-card:hover .cat-arrow { background: var(--rojo); border-color: var(--rojo); }
+  .cat-arrow svg { width: 14px; height: 14px; stroke: #fff; fill: none; }
+  .cat-body {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 28px 26px;
+  }
+  .cat-num {
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    color: var(--rojo); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .cat-name {
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: 1.5px; line-height: 1.05; margin-bottom: 6px;
+  }
+  .cat-sub { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 300; }
+
+  /* ── STATS BAR ────────────────────────────────────── */
+  .stats-bar {
+    background: var(--rojo);
+    padding: 44px 5%;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  }
+  .stat {
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 16px;
+  }
+  .stat:last-child { border-right: none; }
+  .stat-n {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 900; letter-spacing: -1px; line-height: 1;
+  }
+  .stat-l {
+    font-size: 10px; font-weight: 600; letter-spacing: 2.5px;
+    text-transform: uppercase; color: rgba(255,255,255,0.7);
+    margin-top: 6px;
+  }
+
+  /* ── NOSOTROS ─────────────────────────────────────── */
+  #nosotros {
+    background: var(--gris);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px; align-items: center;
+  }
+  .about-img-wrap {
+    position: relative; aspect-ratio: 4/5;
+    background: var(--negro); overflow: hidden;
+  }
+  /* Placeholder — reemplazar con <img src="foto-institucional.jpg"> */
+  .about-img-ph {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    background: linear-gradient(135deg, #111, #1e1e1e);
+  }
+  .about-img-ph svg { width: 64px; height: 64px; opacity: 0.12; stroke: #fff; fill: none; }
+  .about-img-ph span {
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.15);
+  }
+  .about-red-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 4px; background: var(--rojo);
+  }
+  .about-text h2 {
+    font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: 1px; line-height: 1.08; margin-bottom: 20px;
+  }
+  .about-text h2 span { color: var(--rojo); }
+  .about-text p {
+    font-size: 14px; color: var(--texto-muted);
+    line-height: 1.8; font-weight: 300; margin-bottom: 14px;
+  }
+  .about-list { margin-top: 28px; display: flex; flex-direction: column; gap: 13px; }
+  .about-item {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rojo); flex-shrink: 0; }
+
+  /* ── ARTÍCULOS ────────────────────────────────────── */
+  #articulos { background: var(--negro); }
+  .art-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: rgba(255,255,255,0.07);
+    max-width: 1200px; margin: 0 auto;
+  }
+  .art-card {
+    background: var(--negro); padding: 36px 30px;
+    border-top: 3px solid transparent; transition: all 0.3s;
+    cursor: pointer;
+  }
+  .art-card:hover { background: #181818; border-top-color: var(--rojo); }
+  .art-tag {
+    font-size: 9px; font-weight: 800; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--rojo); margin-bottom: 14px;
+  }
+  .art-title {
+    font-size: 17px; font-weight: 700; line-height: 1.35;
+    margin-bottom: 12px;
+  }
+  .art-excerpt {
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    line-height: 1.75; font-weight: 300;
+  }
+  .art-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 20px; font-size: 10px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--rojo);
+  }
+  .art-link svg { width: 12px; height: 12px; stroke: currentColor; fill: none; transition: transform 0.2s; }
+  .art-card:hover .art-link svg { transform: translate(3px,-3px); }
+
+  /* ── TASACIONES ───────────────────────────────────── */
+  #tasaciones {
+    background: #0a0a0a;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 72px; align-items: start;
+  }
+  .tas-text h2 {
+    font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: 1px; line-height: 1.08; margin-bottom: 18px;
+  }
+  .tas-text h2 span { color: var(--rojo); }
+  .tas-text p {
+    font-size: 14px; color: var(--texto-muted);
+    line-height: 1.8; font-weight: 300; margin-bottom: 32px;
+  }
+  .btn-red {
+    display: inline-block; background: var(--rojo); color: #fff;
+    font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; padding: 16px 32px; border-radius: 3px;
+    border: none; transition: background 0.2s; cursor: pointer;
+  }
+  .btn-red:hover { background: var(--rojo-hover); }
+  .btn-outline {
+    display: inline-block; background: transparent;
+    border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
+    font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; padding: 16px 32px; border-radius: 3px;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .btn-outline:hover { border-color: var(--rojo); color: var(--rojo); }
+  .form-card {
+    background: var(--gris); border-radius: 4px; padding: 36px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .form-card h3 {
+    font-size: 14px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 28px;
+  }
+  .fg { margin-bottom: 16px; }
+  .fg label {
+    display: block; font-size: 9px; font-weight: 800;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 8px;
+  }
+  .fg input, .fg select, .fg textarea {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
+    padding: 13px 14px; color: rgba(255,255,255,0.75);
+    font-size: 13px; outline: none; transition: border-color 0.2s;
+  }
+  .fg input:focus, .fg select:focus, .fg textarea:focus {
+    border-color: var(--rojo);
+  }
+  .fg select option { background: #1a1a1a; }
+  .fg textarea { resize: vertical; min-height: 90px; }
+  .form-submit {
+    width: 100%; background: var(--rojo); color: #fff;
+    border: none; border-radius: 3px;
+    font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; padding: 16px; margin-top: 6px;
+    transition: background 0.2s; cursor: pointer;
+  }
+  .form-submit:hover { background: var(--rojo-hover); }
+
+  /* ── EQUIPO ───────────────────────────────────────── */
+  #equipo { background: var(--gris); text-align: center; }
+  #equipo h2 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  #equipo h2 span { color: var(--rojo); }
+  #equipo > p {
+    font-size: 14px; color: var(--texto-muted); font-weight: 300;
+    max-width: 480px; margin: 0 auto 48px;
+  }
+  .equipo-form {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; max-width: 680px; margin: 0 auto;
+    text-align: left;
+  }
+  .equipo-form .fg { margin-bottom: 0; }
+  .equipo-form .fg.full { grid-column: 1 / -1; }
+  .equipo-submit {
+    grid-column: 1 / -1;
+    background: var(--rojo); color: #fff; border: none;
+    border-radius: 3px; font-size: 11px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; padding: 16px;
+    margin-top: 6px; transition: background 0.2s; cursor: pointer;
+  }
+  .equipo-submit:hover { background: var(--rojo-hover); }
+
+  /* ── CONTACTO / FOOTER ────────────────────────────── */
+  footer {
+    background: #070707;
+    border-top: 1px solid rgba(193,18,31,0.2);
+    padding: 64px 5% 32px;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 52px;
+  }
+  .footer-brand p {
+    font-size: 13px; color: rgba(255,255,255,0.3);
+    font-weight: 300; line-height: 1.75; margin-top: 18px;
+    max-width: 270px;
+  }
+  .footer-brand img { height: 48px; width: auto; }
+  .fc h4 {
+    font-size: 9px; font-weight: 800; letter-spacing: 3px;
+    text-transform: uppercase; color: rgba(255,255,255,0.25);
+    margin-bottom: 20px;
+  }
+  .fc a {
+    display: block; color: rgba(255,255,255,0.5);
+    font-size: 13px; font-weight: 400; margin-bottom: 10px;
+    transition: color 0.2s;
+  }
+  .fc a:hover { color: var(--rojo); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.18); }
+  .footer-bottom span { font-size: 12px; color: rgba(193,18,31,0.7); font-weight: 500; }
+
+  /* ── BOTÓN WHATSAPP ───────────────────────────────── */
+  .wa-float {
+    position: fixed; bottom: 96px; right: 24px; z-index: 1100;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: #25D366;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+  }
+  .wa-float:hover { transform: scale(1.1); }
+  .wa-float svg { width: 30px; height: 30px; fill: #fff; }
+
+  /* ── BOTÓN SCROLL TOP ─────────────────────────────── */
+  .top-float {
+    position: fixed; bottom: 26px; right: 24px; z-index: 1100;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--rojo); border: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .top-float:hover { background: var(--rojo-hover); }
+  .top-float svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.5; }
+
+  /* ── RESPONSIVE ───────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .cat-grid { grid-template-columns: repeat(3, 1fr); }
+    #nosotros { grid-template-columns: 1fr; gap: 40px; }
+    #tasaciones { grid-template-columns: 1fr; gap: 48px; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    nav { display: none; }
+    .hamburger { display: flex; }
+    .cat-grid { grid-template-columns: 1fr; }
+    .art-grid { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .equipo-form { grid-template-columns: 1fr; }
+    .equipo-form .fg.full { grid-column: 1; }
+    .equipo-submit { grid-column: 1; }
+    section { padding: 64px 5%; }
+    .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 480px) {
+    .search-box { flex-direction: column; border-radius: 6px; }
+    .search-select { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); }
+    .stat:nth-child(2n) { border-right: none; }
+    .stat:last-child, .stat:nth-last-child(2) { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════ -->
+<header id="site-header">
+  <div class="logo-wrap">
+    <!--
+      INSTRUCCIÓN: Poné el archivo logoinmo.png en la misma carpeta que este index.html
+      El logo ya tiene fondo negro así que se integra perfectamente al header.
+    -->
+    <img src="logoinmo.png" alt="Mazoud Propiedades">
+  </div>
+
+  <nav id="desktop-nav">
+    <a href="articulos.html">Artículos</a>
+    <a href="tasaciones.html">Tasaciones</a>
+    <a href="equipo.html">Sumate al equipo</a>
+    <a href="contacto.html" class="nav-cta">Contacto</a>
+  </nav>
+
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- Menú móvil -->
+<nav class="mobile-nav" id="mobile-nav">
+  <a href="articulos.html"  onclick="closeMobile()">Artículos</a>
+  <a href="tasaciones.html" onclick="closeMobile()">Tasaciones</a>
+  <a href="equipo.html"     onclick="closeMobile()">Sumate al equipo</a>
+  <a href="contacto.html"   onclick="closeMobile()">Contacto</a>
+</nav>
+
+<!-- ══ HERO ════════════════════════════════════════════ -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Inmobiliaria · Buenos Aires</div>
+
+    <h1>Tu próxima<br><span>propiedad</span><br>empieza aquí</h1>
+
+    <!-- BUSCADOR -->
+    <div class="search-box">
+      <select class="search-select" aria-label="Tipo de propiedad">
+        <option value="">Tipo</option>
+        <option>Departamento</option>
+        <option>Casa</option>
+        <option>Local / Oficina</option>
+        <option>PH / Dúplex</option>
+      </select>
+      <select class="search-input" aria-label="Buscar por zona">
+        <option value="">Seleccionar zona</option>
+        <option>Merlo</option>
+        <option>Morón</option>
+        <option>S.A. Padua</option>
+        <option>Ituzaingó</option>
+        <option>Castelar</option>
+        <option>Moreno</option>
+      </select>
+      <button class="search-btn" onclick="buscar()">Buscar</button>
+    </div>
+
+    <!-- Zonas rápidas -->
+    <div class="search-chips">
+      <button class="chip" onclick="setZona(this)">Merlo</button>
+      <button class="chip" onclick="setZona(this)">S.A. Padua</button>
+      <button class="chip" onclick="setZona(this)">Ituzaingo</button>
+      <button class="chip" onclick="setZona(this)">Castelar</button>
+      <button class="chip" onclick="setZona(this)">Moreno</button>
+      <button class="chip" onclick="setZona(this)">Moron</button>
+    </div>
+  </div>
+
+  <!-- Flecha bajar -->
+  <div class="scroll-cta" onclick="scrollTo('propiedades')">
+    <span>Explorar</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══ CATEGORÍAS ══════════════════════════════════════ -->
+<section id="propiedades">
+  <div class="sec-head">
+    <span class="sec-label"></span>
+    <h2>¿Qué estás buscando?</h2>
+    <p>Explorá nuestras categorías de propiedades disponibles</p>
+  </div>
+
+  <div class="cat-grid">
+
+    <!-- Departamentos -->
+    <a href="departamentos.html" class="cat-card"
+       style="background: linear-gradient(145deg, #161616, #1e0c0c);">
+      <div class="cat-img">🏢</div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </div>
+      <div class="cat-body">
+        <div class="cat-num">01 — Alquiler / Venta</div>
+        <div class="cat-name">Departamentos</div>
+        <div class="cat-sub">Monoambientes, 2, 3 y 4 ambientes</div>
+      </div>
+    </a>
+
+    <!-- Casas -->
+    <a href="casas.html" class="cat-card"
+       style="background: linear-gradient(145deg, #111, #161308);">
+      <div class="cat-img">🏠</div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </div>
+      <div class="cat-body">
+        <div class="cat-num">02 — Alquiler / Venta</div>
+        <div class="cat-name">Casas</div>
+        <div class="cat-sub">Casas, PH, dúplex y chalets</div>
+      </div>
+    </a>
+
+    <!-- Locales -->
+    <a href="locales.html" class="cat-card"
+       style="background: linear-gradient(145deg, #0e0e0e, #100d17);">
+      <div class="cat-img">🏪</div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </div>
+      <div class="cat-body">
+        <div class="cat-num">03 — Alquiler / Venta</div>
+        <div class="cat-name">Locales</div>
+        <div class="cat-sub">Comercios, oficinas y galpones</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══ ARTÍCULOS ═══════════════════════════════════════ -->
+<section id="articulos">
+  <div class="sec-head">
+    <span class="sec-label"></span>
+    <h2>Artículos de interés</h2>
+    <p>Lo que tenés que saber antes de alquilar o comprar</p>
+  </div>
+
+  <div class="art-grid">
+    <div class="art-card">
+      <div class="art-tag">Inversión</div>
+      <div class="art-title">¿Conviene comprar en pozo en 2025?</div>
+      <div class="art-excerpt">Analizamos riesgos y beneficios de invertir en proyectos en construcción y qué zonas están creciendo más en el Gran Buenos Aires.</div>
+      <a class="art-link" href="articulos.html#articulo-3">Leer más
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </a>
+    </div>
+    <div class="art-card">
+      <div class="art-tag">Alquiler</div>
+      <div class="art-title">Qué documentación necesitás para alquilar</div>
+      <div class="art-excerpt">Garantías, recibos de sueldo, avales bancarios: te explicamos todo lo que el propietario puede pedirte y cómo prepararte.</div>
+      <a class="art-link" href="#">Leer más
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </a>
+    </div>
+    <div class="art-card">
+      <div class="art-tag">Mercado</div>
+      <div class="art-title">Los barrios con mayor revalorización del año</div>
+      <div class="art-excerpt">Algunas zonas de Buenos Aires subieron más de un 30% en dólares. ¿Cuáles son, por qué y cuáles siguen con potencial?</div>
+      <a class="art-link" href="#">Leer más
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TASACIONES ══════════════════════════════════════ -->
+<section id="tasaciones">
+  <div class="tas-text">
+    <span class="sec-label"></span>
+    <h2>Tasá tu <span>propiedad</span><br>sin cargo</h2>
+    <p>Conocé el valor real de tu inmueble en el mercado actual.
+       Nuestros especialistas realizan una tasación profesional,
+       gratuita y sin compromiso en 24 horas hábiles.</p>
+    <a href="https://wa.me/541122947971?text=Hola%20Mazoud%2C%20quiero%20tasar%20mi%20propiedad"
+       target="_blank" class="btn-red">Consultar por WhatsApp</a>
+  </div>
+
+  <div class="form-card">
+    <h3>Solicitar tasación</h3>
+    <div class="fg">
+      <label>Nombre completo</label>
+      <input type="text" placeholder="Tu nombre y apellido">
+    </div>
+    <div class="fg">
+      <label>Teléfono</label>
+      <input type="tel" placeholder="+54 11 XXXX-XXXX">
+    </div>
+    <div class="fg">
+      <label>Tipo de propiedad</label>
+      <select>
+        <option>Departamento</option>
+        <option>Casa / PH</option>
+        <option>Local / Oficina</option>
+        <option>Terreno</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Dirección o zona</label>
+      <input type="text" placeholder="Ej: Palermo, Av. Santa Fe 1234">
+    </div>
+    <button class="form-submit" onclick="enviarTasacion()">Enviar solicitud</button>
+  </div>
+</section>
+
+<!-- ══ FORMA PARTE DEL EQUIPO ══════════════════════════ -->
+<section id="equipo">
+  <span class="sec-label" style="margin: 0 auto 20px;"></span>
+  <h2>Formá parte de<br>nuestro <span>equipo</span></h2>
+  <p>Si sos corredor inmobiliario o querés desarrollarte en el sector,
+     queremos conocerte.</p>
+
+  <div class="equipo-form">
+    <div class="fg">
+      <label>Nombre</label>
+      <input type="text" placeholder="Tu nombre">
+    </div>
+    <div class="fg">
+      <label>Teléfono</label>
+      <input type="tel" placeholder="+54 11 XXXX-XXXX">
+    </div>
+    <div class="fg">
+      <label>Email</label>
+      <input type="email" placeholder="tu@email.com">
+    </div>
+    <div class="fg">
+      <label>Experiencia</label>
+      <select>
+        <option>Sin experiencia previa</option>
+        <option>1 a 3 años</option>
+        <option>Más de 3 años</option>
+        <option>Corredor matriculado</option>
+      </select>
+    </div>
+    <div class="fg full">
+      <label>¿Por qué querés unirte?</label>
+      <textarea placeholder="Contanos brevemente sobre vos y tus motivaciones..."></textarea>
+    </div>
+    <button class="equipo-submit" onclick="enviarPostulacion()">Enviar postulación</button>
+  </div>
+</section>
+
+<!-- ══ FOOTER / CONTACTO ═══════════════════════════════ -->
+<footer id="contacto">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="logoinmo.png" alt="Mazoud Propiedades">
+      <p>Tu inmobiliaria de confianza en Buenos Aires.
+         </p>
+    </div>
+    <div class="fc">
+      <h4>Propiedades</h4>
+      <a href="departamentos.html">Departamentos</a>
+      <a href="casas.html">Casas y PH</a>
+      <a href="locales.html">Locales</a>
+      <a href="#tasaciones">Tasaciones</a>
+    </div>
+    <div class="fc">
+      <h4>Empresa</h4>
+      <a href="articulos.html">Artículos</a>
+      <a href="#equipo">Sumate al equipo</a>
+    </div>
+    <div class="fc">
+      <h4>Contacto</h4>
+      <!-- Reemplazá con los datos reales -->
+      <a href="mailto:info@mazoudpropiedades.com.ar">info@mazoudpropiedades.com.ar</a>
+      <a href="tel:+541122947971">+54 11 2294-7971</a>
+      <a href="#">Buenos Aires, Argentina</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Mazoud Propiedades. Todos los derechos reservados.</p>
+    <span>mazoudpropiedades.com.ar</span>
+  </div>
+</footer>
+
+<!-- ══ WHATSAPP FLOTANTE ════════════════════════════════ -->
+<a class="wa-float"
+   href="https://wa.me/541122947971?text=Hola%20Mazoud%2C%20quiero%20consultar%20sobre%20una%20propiedad"
+   target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- ══ SCROLL TOP FLOTANTE ═════════════════════════════ -->
+<button class="top-float" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+        aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- ══ JAVASCRIPT ═══════════════════════════════════════ -->
+<script>
+  /* ── Hamburger menú ── */
+  const ham = document.getElementById('hamburger');
+  const mob = document.getElementById('mobile-nav');
+  ham.addEventListener('click', () => {
+    mob.classList.toggle('open');
+  });
+  function closeMobile() { mob.classList.remove('open'); }
+
+  /* ── Scroll suave a secciones ── */
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* ── Chips de zonas ── */
+  function setZona(btn) {
+    document.querySelector('.search-input').value = btn.textContent;
+  }
+
+  /* ── Buscador (personalizar con tu sistema de propiedades) ── */
+  function buscar() {
+    const tipo  = document.querySelector('.search-select').value;
+    const zona  = document.querySelector('.search-input').value.trim();
+    if (!zona) {
+      alert('Por favor ingresá una zona o barrio para buscar.');
+      return;
+    }
+    /* Ejemplo: redirigir a página de resultados */
+    /* window.location.href = `resultados.html?tipo=${encodeURIComponent(tipo)}&zona=${encodeURIComponent(zona)}`; */
+    alert(`Buscando: ${tipo || 'Cualquier tipo'} en ${zona}\n\nConectá aquí tu sistema de propiedades.`);
+  }
+
+  /* ── Formulario tasación ── */
+  function enviarTasacion() {
+    const campos = document.querySelectorAll('#tasaciones input, #tasaciones select');
+    let ok = true;
+    campos.forEach(c => {
+      if (!c.value.trim()) { c.style.borderColor = 'var(--rojo)'; ok = false; }
+      else c.style.borderColor = '';
+    });
+    if (!ok) { alert('Por favor completá todos los campos.'); return; }
+
+    /* Opción A: redirigir a WhatsApp con los datos */
+    const nombre = campos[0].value;
+    const tel    = campos[1].value;
+    const tipo   = campos[2].value;
+    const dir    = campos[3].value;
+    const msg = `Hola Mazoud! Quiero solicitar una tasación.\nNombre: ${nombre}\nTeléfono: ${tel}\nPropiedad: ${tipo}\nZona: ${dir}`;
+    window.open(`https://wa.me/541122947971?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  /* ── Formulario equipo ── */
+  function enviarPostulacion() {
+    const campos = document.querySelectorAll('#equipo input, #equipo select, #equipo textarea');
+    let ok = true;
+    campos.forEach(c => {
+      if (!c.value.trim()) { c.style.borderColor = 'var(--rojo)'; ok = false; }
+      else c.style.borderColor = '';
+    });
+    if (!ok) { alert('Por favor completá todos los campos.'); return; }
+
+    const nombre = campos[0].value;
+    const tel    = campos[1].value;
+    const email  = campos[2].value;
+    const exp    = campos[3].value;
+    const motivo = campos[4].value;
+    const msg = `Hola! Me postulo para el equipo Mazoud.\nNombre: ${nombre}\nTeléfono: ${tel}\nEmail: ${email}\nExperiencia: ${exp}\nMotivación: ${motivo}`;
+    window.open(`https://wa.me/541122947971?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  /* ── Header shadow al hacer scroll ── */
+  window.addEventListener('scroll', () => {
+    const h = document.getElementById('site-header');
+    h.style.background = window.scrollY > 60
+      ? 'rgba(13,13,13,0.99)'
+      : 'rgba(13,13,13,0.96)';
+  });
+</script>
+<script>
+    function filtrarPropiedades() {
+        // 1. Buscamos todas las casillas de zona que están tildadas (checked)
+        const checkboxesCheados = document.querySelectorAll('.check-zona:checked');
+        
+        // Convertimos las zonas seleccionadas en una lista de palabras limpias [ 'merlo', 'padua' ]
+        const zonasSeleccionadas = Array.from(checkboxesCheados).map(checkbox => checkbox.value);
+        
+        // 2. Traemos todas las tarjetas de propiedades que están en la página
+        const tarjetas = document.querySelectorAll('.card');
+    
+        tarjetas.forEach(tarjeta => {
+            // Leemos de qué zona es esta tarjeta específica
+            const zonaTarjeta = tarjeta.getAttribute('data-zona');
+    
+            // SI no elegiste ninguna casilla, mostramos todas por defecto
+            if (zonasSeleccionadas.length === 0) {
+                tarjeta.style.display = 'block';
+            } 
+            // SI la zona de la tarjeta coincide con alguna de las que tildaste, la mostramos
+            else if (zonasSeleccionadas.includes(zonaTarjeta)) {
+                tarjeta.style.display = 'block';
+            } 
+            // SI no coincide con ninguna, la ocultamos de la pantalla
+            else {
+                tarjeta.style.display = 'none';
+            }
+        });
+    }
+    </script>
+</body>
+</html>
