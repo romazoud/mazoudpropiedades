@@ -6,6 +6,8 @@
 <title>Mazoud Propiedades </title>
 <link rel="icon" type="image/png" href="logoinmo.png">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
   /* ── RESET & BASE ─────────────────────────────────── */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -104,7 +106,6 @@
                 radial-gradient(ellipse at 10% 80%, rgba(193,18,31,0.06) 0%, transparent 50%),
                 var(--negro);
   }
-  /* Grilla de fondo sutil */
   .hero-grid {
     position: absolute; inset: 0;
     background-image:
@@ -226,7 +227,6 @@
     transition: transform 0.4s;
   }
   .cat-card:hover { transform: scale(1.01); }
-  /* Imagen placeholder con IA — reemplazar con <img> real */
   .cat-img {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -265,72 +265,6 @@
     letter-spacing: 1.5px; line-height: 1.05; margin-bottom: 6px;
   }
   .cat-sub { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 300; }
-
-  /* ── STATS BAR ────────────────────────────────────── */
-  .stats-bar {
-    background: var(--rojo);
-    padding: 44px 5%;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
-  }
-  .stat {
-    text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.2);
-    padding: 8px 16px;
-  }
-  .stat:last-child { border-right: none; }
-  .stat-n {
-    font-size: clamp(32px, 5vw, 48px);
-    font-weight: 900; letter-spacing: -1px; line-height: 1;
-  }
-  .stat-l {
-    font-size: 10px; font-weight: 600; letter-spacing: 2.5px;
-    text-transform: uppercase; color: rgba(255,255,255,0.7);
-    margin-top: 6px;
-  }
-
-  /* ── NOSOTROS ─────────────────────────────────────── */
-  #nosotros {
-    background: var(--gris);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 72px; align-items: center;
-  }
-  .about-img-wrap {
-    position: relative; aspect-ratio: 4/5;
-    background: var(--negro); overflow: hidden;
-  }
-  /* Placeholder — reemplazar con <img src="foto-institucional.jpg"> */
-  .about-img-ph {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 12px;
-    background: linear-gradient(135deg, #111, #1e1e1e);
-  }
-  .about-img-ph svg { width: 64px; height: 64px; opacity: 0.12; stroke: #fff; fill: none; }
-  .about-img-ph span {
-    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-    color: rgba(255,255,255,0.15);
-  }
-  .about-red-bar {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 4px; background: var(--rojo);
-  }
-  .about-text h2 {
-    font-size: clamp(26px, 3.5vw, 38px);
-    font-weight: 900; text-transform: uppercase;
-    letter-spacing: 1px; line-height: 1.08; margin-bottom: 20px;
-  }
-  .about-text h2 span { color: var(--rojo); }
-  .about-text p {
-    font-size: 14px; color: var(--texto-muted);
-    line-height: 1.8; font-weight: 300; margin-bottom: 14px;
-  }
-  .about-list { margin-top: 28px; display: flex; flex-direction: column; gap: 13px; }
-  .about-item {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8);
-  }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rojo); flex-shrink: 0; }
 
   /* ── ARTÍCULOS ────────────────────────────────────── */
   #articulos { background: var(--negro); }
@@ -385,17 +319,9 @@
     display: inline-block; background: var(--rojo); color: #fff;
     font-size: 11px; font-weight: 800; letter-spacing: 2px;
     text-transform: uppercase; padding: 16px 32px; border-radius: 3px;
-    border: none; transition: background 0.2s; cursor: pointer;
+    border: none; transition: background 0.2s; cursor: pointer; text-decoration: none;
   }
   .btn-red:hover { background: var(--rojo-hover); }
-  .btn-outline {
-    display: inline-block; background: transparent;
-    border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
-    font-size: 11px; font-weight: 800; letter-spacing: 2px;
-    text-transform: uppercase; padding: 16px 32px; border-radius: 3px;
-    transition: all 0.2s; cursor: pointer;
-  }
-  .btn-outline:hover { border-color: var(--rojo); color: var(--rojo); }
   .form-card {
     background: var(--gris); border-radius: 4px; padding: 36px;
     border: 1px solid rgba(255,255,255,0.06);
@@ -440,23 +366,15 @@
   #equipo h2 span { color: var(--rojo); }
   #equipo > p {
     font-size: 14px; color: var(--texto-muted); font-weight: 300;
-    max-width: 480px; margin: 0 auto 48px;
+    max-width: 600px; margin: 0 auto 40px; line-height: 1.6;
   }
-  .equipo-form {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 16px; max-width: 680px; margin: 0 auto;
-    text-align: left;
+  .btn-equipo {
+    display: inline-block; background: var(--rojo); color: var(--blanco);
+    font-size: 13px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; padding: 20px 40px; border-radius: 6px;
+    transition: all 0.3s ease; text-decoration: none;
   }
-  .equipo-form .fg { margin-bottom: 0; }
-  .equipo-form .fg.full { grid-column: 1 / -1; }
-  .equipo-submit {
-    grid-column: 1 / -1;
-    background: var(--rojo); color: #fff; border: none;
-    border-radius: 3px; font-size: 11px; font-weight: 800;
-    letter-spacing: 2px; text-transform: uppercase; padding: 16px;
-    margin-top: 6px; transition: background 0.2s; cursor: pointer;
-  }
-  .equipo-submit:hover { background: var(--rojo-hover); }
+  .btn-equipo:hover { background: var(--rojo-hover); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(193, 18, 31, 0.3); }
 
   /* ── CONTACTO / FOOTER ────────────────────────────── */
   footer {
@@ -522,7 +440,6 @@
   /* ── RESPONSIVE ───────────────────────────────────── */
   @media (max-width: 1024px) {
     .cat-grid { grid-template-columns: repeat(3, 1fr); }
-    #nosotros { grid-template-columns: 1fr; gap: 40px; }
     #tasaciones { grid-template-columns: 1fr; gap: 48px; }
     .footer-top { grid-template-columns: 1fr 1fr; }
   }
@@ -532,9 +449,6 @@
     .cat-grid { grid-template-columns: 1fr; }
     .art-grid { grid-template-columns: 1fr; }
     .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    .equipo-form { grid-template-columns: 1fr; }
-    .equipo-form .fg.full { grid-column: 1; }
-    .equipo-submit { grid-column: 1; }
     section { padding: 64px 5%; }
     .footer-top { grid-template-columns: 1fr; gap: 32px; }
   }
@@ -550,13 +464,8 @@
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════ -->
 <header id="site-header">
   <div class="logo-wrap">
-    <!--
-      INSTRUCCIÓN: Poné el archivo logoinmo.png en la misma carpeta que este index.html
-      El logo ya tiene fondo negro así que se integra perfectamente al header.
-    -->
     <img src="logoinmo.png" alt="Mazoud Propiedades">
   </div>
 
@@ -572,7 +481,6 @@
   </button>
 </header>
 
-<!-- Menú móvil -->
 <nav class="mobile-nav" id="mobile-nav">
   <a href="articulos.html"  onclick="closeMobile()">Artículos</a>
   <a href="tasaciones.html" onclick="closeMobile()">Tasaciones</a>
@@ -580,7 +488,6 @@
   <a href="contacto.html"   onclick="closeMobile()">Contacto</a>
 </nav>
 
-<!-- ══ HERO ════════════════════════════════════════════ -->
 <section id="inicio">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
@@ -590,7 +497,6 @@
 
     <h1>Tu próxima<br><span>propiedad</span><br>empieza aquí</h1>
 
-    <!-- BUSCADOR -->
     <div class="search-box">
       <select class="search-select" aria-label="Tipo de propiedad">
         <option value="">Tipo</option>
@@ -611,7 +517,6 @@
       <button class="search-btn" onclick="buscar()">Buscar</button>
     </div>
 
-    <!-- Zonas rápidas -->
     <div class="search-chips">
       <button class="chip" onclick="setZona(this)">Merlo</button>
       <button class="chip" onclick="setZona(this)">S.A. Padua</button>
@@ -622,7 +527,6 @@
     </div>
   </div>
 
-  <!-- Flecha bajar -->
   <div class="scroll-cta" onclick="scrollTo('propiedades')">
     <span>Explorar</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -631,7 +535,6 @@
   </div>
 </section>
 
-<!-- ══ CATEGORÍAS ══════════════════════════════════════ -->
 <section id="propiedades">
   <div class="sec-head">
     <span class="sec-label"></span>
@@ -641,7 +544,6 @@
 
   <div class="cat-grid">
 
-    <!-- Departamentos -->
     <a href="departamentos.html" class="cat-card"
        style="background: linear-gradient(145deg, #161616, #1e0c0c);">
       <div class="cat-img">🏢</div>
@@ -659,7 +561,6 @@
       </div>
     </a>
 
-    <!-- Casas -->
     <a href="casas.html" class="cat-card"
        style="background: linear-gradient(145deg, #111, #161308);">
       <div class="cat-img">🏠</div>
@@ -677,7 +578,6 @@
       </div>
     </a>
 
-    <!-- Locales -->
     <a href="locales.html" class="cat-card"
        style="background: linear-gradient(145deg, #0e0e0e, #100d17);">
       <div class="cat-img">🏪</div>
@@ -698,7 +598,6 @@
   </div>
 </section>
 
-<!-- ══ ARTÍCULOS ═══════════════════════════════════════ -->
 <section id="articulos">
   <div class="sec-head">
     <span class="sec-label"></span>
@@ -709,7 +608,7 @@
   <div class="art-grid">
     <div class="art-card">
       <div class="art-tag">Inversión</div>
-      <div class="art-title">¿Conviene comprar en pozo en 2025?</div>
+      <div class="art-title">¿Conviene comprar en pozo en 2026?</div>
       <div class="art-excerpt">Analizamos riesgos y beneficios de invertir en proyectos en construcción y qué zonas están creciendo más en el Gran Buenos Aires.</div>
       <a class="art-link" href="articulos.html#articulo-3">Leer más
         <svg viewBox="0 0 24 24" stroke-width="2">
@@ -743,7 +642,6 @@
   </div>
 </section>
 
-<!-- ══ TASACIONES ══════════════════════════════════════ -->
 <section id="tasaciones">
   <div class="tas-text">
     <span class="sec-label"></span>
@@ -782,50 +680,23 @@
   </div>
 </section>
 
-<!-- ══ FORMA PARTE DEL EQUIPO ══════════════════════════ -->
 <section id="equipo">
   <span class="sec-label" style="margin: 0 auto 20px;"></span>
   <h2>Formá parte de<br>nuestro <span>equipo</span></h2>
-  <p>Si sos corredor inmobiliario o querés desarrollarte en el sector,
-     queremos conocerte.</p>
+  <p>Si sos proactivo, tenés vocación de servicio y querés desarrollarte en el sector inmobiliario, queremos conocerte. Para proteger tus datos y facilitar la carga de tu currículum, procesamos las postulaciones a través de un formulario seguro de Google.</p>
 
-  <div class="equipo-form">
-    <div class="fg">
-      <label>Nombre</label>
-      <input type="text" placeholder="Tu nombre">
-    </div>
-    <div class="fg">
-      <label>Teléfono</label>
-      <input type="tel" placeholder="+54 11 XXXX-XXXX">
-    </div>
-    <div class="fg">
-      <label>Email</label>
-      <input type="email" placeholder="tu@email.com">
-    </div>
-    <div class="fg">
-      <label>Experiencia</label>
-      <select>
-        <option>Sin experiencia previa</option>
-        <option>1 a 3 años</option>
-        <option>Más de 3 años</option>
-        <option>Corredor matriculado</option>
-      </select>
-    </div>
-    <div class="fg full">
-      <label>¿Por qué querés unirte?</label>
-      <textarea placeholder="Contanos brevemente sobre vos y tus motivaciones..."></textarea>
-    </div>
-    <button class="equipo-submit" onclick="enviarPostulacion()">Enviar postulación</button>
+  <div style="margin-top: 40px;">
+    <a href="https://forms.gle/qoS2B8UMHeyYEHUV8" target="_blank" class="btn-equipo">
+      <i class="fas fa-file-upload" style="margin-right: 10px;"></i> Completar Formulario y Subir CV
+    </a>
   </div>
 </section>
 
-<!-- ══ FOOTER / CONTACTO ═══════════════════════════════ -->
 <footer id="contacto">
   <div class="footer-top">
     <div class="footer-brand">
       <img src="logoinmo.png" alt="Mazoud Propiedades">
-      <p>Tu inmobiliaria de confianza en Buenos Aires.
-         </p>
+      <p>Tu inmobiliaria de confianza en Buenos Aires.</p>
     </div>
     <div class="fc">
       <h4>Propiedades</h4>
@@ -837,23 +708,21 @@
     <div class="fc">
       <h4>Empresa</h4>
       <a href="articulos.html">Artículos</a>
-      <a href="#equipo">Sumate al equipo</a>
+      <a href="equipo.html">Sumate al equipo</a>
     </div>
     <div class="fc">
       <h4>Contacto</h4>
-      <!-- Reemplazá con los datos reales -->
       <a href="mailto:info@mazoudpropiedades.com.ar">info@mazoudpropiedades.com.ar</a>
       <a href="tel:+541122947971">+54 11 2294-7971</a>
       <a href="#">Buenos Aires, Argentina</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 Mazoud Propiedades. Todos los derechos reservados.</p>
+    <p>© 2026 Mazoud Propiedades. Todos los derechos reservados.</p>
     <span>mazoudpropiedades.com.ar</span>
   </div>
 </footer>
 
-<!-- ══ WHATSAPP FLOTANTE ════════════════════════════════ -->
 <a class="wa-float"
    href="https://wa.me/541122947971?text=Hola%20Mazoud%2C%20quiero%20consultar%20sobre%20una%20propiedad"
    target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
@@ -862,13 +731,11 @@
   </svg>
 </a>
 
-<!-- ══ SCROLL TOP FLOTANTE ═════════════════════════════ -->
 <button class="top-float" onclick="window.scrollTo({top:0,behavior:'smooth'})"
         aria-label="Volver arriba">
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
-<!-- ══ JAVASCRIPT ═══════════════════════════════════════ -->
 <script>
   /* ── Hamburger menú ── */
   const ham = document.getElementById('hamburger');
@@ -889,7 +756,7 @@
     document.querySelector('.search-input').value = btn.textContent;
   }
 
-  /* ── Buscador (personalizar con tu sistema de propiedades) ── */
+  /* ── Buscador ── */
   function buscar() {
     const tipo  = document.querySelector('.search-select').value;
     const zona  = document.querySelector('.search-input').value.trim();
@@ -897,8 +764,6 @@
       alert('Por favor ingresá una zona o barrio para buscar.');
       return;
     }
-    /* Ejemplo: redirigir a página de resultados */
-    /* window.location.href = `resultados.html?tipo=${encodeURIComponent(tipo)}&zona=${encodeURIComponent(zona)}`; */
     alert(`Buscando: ${tipo || 'Cualquier tipo'} en ${zona}\n\nConectá aquí tu sistema de propiedades.`);
   }
 
@@ -912,31 +777,11 @@
     });
     if (!ok) { alert('Por favor completá todos los campos.'); return; }
 
-    /* Opción A: redirigir a WhatsApp con los datos */
     const nombre = campos[0].value;
     const tel    = campos[1].value;
     const tipo   = campos[2].value;
     const dir    = campos[3].value;
     const msg = `Hola Mazoud! Quiero solicitar una tasación.\nNombre: ${nombre}\nTeléfono: ${tel}\nPropiedad: ${tipo}\nZona: ${dir}`;
-    window.open(`https://wa.me/541122947971?text=${encodeURIComponent(msg)}`, '_blank');
-  }
-
-  /* ── Formulario equipo ── */
-  function enviarPostulacion() {
-    const campos = document.querySelectorAll('#equipo input, #equipo select, #equipo textarea');
-    let ok = true;
-    campos.forEach(c => {
-      if (!c.value.trim()) { c.style.borderColor = 'var(--rojo)'; ok = false; }
-      else c.style.borderColor = '';
-    });
-    if (!ok) { alert('Por favor completá todos los campos.'); return; }
-
-    const nombre = campos[0].value;
-    const tel    = campos[1].value;
-    const email  = campos[2].value;
-    const exp    = campos[3].value;
-    const motivo = campos[4].value;
-    const msg = `Hola! Me postulo para el equipo Mazoud.\nNombre: ${nombre}\nTeléfono: ${tel}\nEmail: ${email}\nExperiencia: ${exp}\nMotivación: ${motivo}`;
     window.open(`https://wa.me/541122947971?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
@@ -950,33 +795,24 @@
 </script>
 <script>
     function filtrarPropiedades() {
-        // 1. Buscamos todas las casillas de zona que están tildadas (checked)
         const checkboxesCheados = document.querySelectorAll('.check-zona:checked');
-        
-        // Convertimos las zonas seleccionadas en una lista de palabras limpias [ 'merlo', 'padua' ]
         const zonasSeleccionadas = Array.from(checkboxesCheados).map(checkbox => checkbox.value);
-        
-        // 2. Traemos todas las tarjetas de propiedades que están en la página
         const tarjetas = document.querySelectorAll('.card');
     
         tarjetas.forEach(tarjeta => {
-            // Leemos de qué zona es esta tarjeta específica
             const zonaTarjeta = tarjeta.getAttribute('data-zona');
     
-            // SI no elegiste ninguna casilla, mostramos todas por defecto
             if (zonasSeleccionadas.length === 0) {
                 tarjeta.style.display = 'block';
             } 
-            // SI la zona de la tarjeta coincide con alguna de las que tildaste, la mostramos
             else if (zonasSeleccionadas.includes(zonaTarjeta)) {
                 tarjeta.style.display = 'block';
             } 
-            // SI no coincide con ninguna, la ocultamos de la pantalla
             else {
                 tarjeta.style.display = 'none';
             }
         });
     }
-    </script>
+</script>
 </body>
 </html>
