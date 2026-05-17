@@ -287,8 +287,7 @@
         <section class="formulario-caja">
             <h2>Envíanos tu consulta</h2>
             
-            <form action="#" method="POST">
-                
+<form id="contactForm">                
                 <div class="fila-inputs">
                     <div class="grupo-input">
                         <label for="nombre">Nombre completo</label>
@@ -333,19 +332,64 @@
         <a href="https://wa.me/5491100000000" target="_blank" class="btn-flotante btn-whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
         <button type="button" class="btn-flotante btn-scroll-top" id="scrollTopBtn" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
     </div>
-
-    <script>
-        const scrollTopBtn = document.getElementById("scrollTopBtn");
-        window.onscroll = function() {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                scrollTopBtn.style.display = "flex";
-            } else {
-                scrollTopBtn.style.display = "none";
-            }
-        };
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCmTXzT0d5qr8TNm28zD9ShtYgTb-xHi28",
+  authDomain: "mazoud-propiedades.firebaseapp.com",
+  projectId: "mazoud-propiedades",
+  storageBucket: "mazoud-propiedades.firebasestorage.app",
+  messagingSenderId: "487069714795",
+  appId: "1:487069714795:web:8750c8046ff755e367242e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const form = document.getElementById("contactForm");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById("nombre").value;
+  const telefono = document.getElementById("telefono").value;
+  const email = document.getElementById("email").value;
+  const motivo = document.getElementById("motivo").value;
+  const mensaje = document.getElementById("mensaje").value;
+  try {
+    await addDoc(collection(db, "consultas"), {
+      nombre,
+      telefono,
+      email,
+      motivo,
+      mensaje,
+      fecha: new Date()
+    });
+    alert("Consulta enviada correctamente");
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    alert("Error al enviar");
+  }
+});
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+window.onscroll = function () {
+  if (
+    document.body.scrollTop > 300 ||
+    document.documentElement.scrollTop > 300
+  ) {
+    scrollTopBtn.style.display = "flex";
+  } else {
+    scrollTopBtn.style.display = "none";
+  }
+};
+window.scrollToTop = function () {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+};
+</script>
 </body>
 </html>
