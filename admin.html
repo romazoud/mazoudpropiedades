@@ -11,7 +11,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 <script src="firebase-config.js"></script>
 
 <style>
@@ -357,7 +356,7 @@ async function guardarPropiedad() {
 
   const btn = document.getElementById('btn-guardar');
   btn.disabled = true;
-  btn.textContent = 'Guardando...';
+  btn.textContent = 'Subiendo fotos y guardando...';
 
   const editId = document.getElementById('edit-id').value;
 
@@ -383,31 +382,44 @@ async function guardarPropiedad() {
 
   try {
     let docId = editId;
+    let urlsFotosNuevas = [];
 
+    // 1. SUBIR FOTOS A CLOUDINARY PRIMERO
+    if (archivosSeleccionados.length > 0) {
+      const cloudName = 'TU_CLOUD_NAME'; // <--- ACÁ PONÉS TU CLOUD NAME (Ej: 'mazoud123')
+      const uploadPreset = 'mazoud-propiedades'; // <--- ACÁ PONÉS TU PRESET (Ej: 'mazoud-propiedades')
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+      for (const file of archivosSeleccionados) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const response = await fetch(cloudinaryUrl, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        if (data.secure_url) {
+          urlsFotosNuevas.push(data.secure_url);
+        }
+      }
+    }
+
+    // 2. GUARDAR DATOS EN FIRESTORE
     if (!docId) {
       datos.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
-      datos.fotos = [];
+      datos.fotos = urlsFotosNuevas; // Guardamos los links de Cloudinary
       const nuevoDoc = await db.collection('propiedades').add(datos);
       docId = nuevoDoc.id;
     } else {
-      await db.collection('propiedades').doc(docId).update(datos);
-    }
-
-    // Subir fotos nuevas si el usuario seleccionó alguna
-    if (archivosSeleccionados.length > 0) {
-      const urls = [];
-      for (const file of archivosSeleccionados) {
-        const path = `propiedades/${docId}/${Date.now()}_${file.name}`;
-        const ref = storage.ref(path);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-        urls.push(url);
-      }
       // Si es edición, agregamos las fotos nuevas a las existentes
       const docRef = db.collection('propiedades').doc(docId);
       const docSnap = await docRef.get();
       const fotosExistentes = docSnap.data().fotos || [];
-      await docRef.update({ fotos: fotosExistentes.concat(urls) });
+      datos.fotos = fotosExistentes.concat(urlsFotosNuevas);
+      await docRef.update(datos);
     }
 
     msg.className = 'ok';
@@ -496,17 +508,6 @@ async function borrarPropiedad(id) {
   if (!confirm('¿Seguro que querés borrar esta propiedad? Esta acción no se puede deshacer.')) return;
 
   try {
-    // Borra también las fotos del Storage
-    const docSnap = await db.collection('propiedades').doc(id).get();
-    const p = docSnap.data();
-    if (p && p.fotos && p.fotos.length) {
-      for (const url of p.fotos) {
-        try {
-          const ref = storage.refFromURL(url);
-          await ref.delete();
-        } catch (e) { console.warn('No se pudo borrar una foto:', e); }
-      }
-    }
     await db.collection('propiedades').doc(id).delete();
   } catch (err) {
     console.error(err);
