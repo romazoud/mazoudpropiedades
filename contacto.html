@@ -285,52 +285,54 @@
         </aside>
 
         <section class="formulario-caja">
-            <h2>Envíanos tu consulta</h2>
+    <h2>Envíanos tu consulta</h2>
+    
+    <!-- El "action" y el "method" hacen el trabajo pesado por vos -->
+    <form action="https://formsubmit.co/mazoudpropiedades@gmail.com" method="POST">
+        
+        <!-- Este campo es para que no te pida resolver un captcha -->
+        <input type="hidden" name="_captcha" value="false">
+        
+        <!-- Este campo hace que después de enviar vuelva a tu página -->
+        <input type="hidden" name="_next" value="https://romazoud.github.io/mazoudpropiedades/contacto.html">
+        
+        <div class="fila-inputs">
+            <div class="grupo-input">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
+            </div>
             
+            <div class="grupo-input">
+                <label for="telefono">Teléfono / WhatsApp</label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Ej: 11 1234 5678" required>
+            </div>
+        </div>
 
-<form id="formulario-inmobiliaria">
+        <div class="grupo-input">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+        </div>
 
-    <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+        <div class="grupo-input">
+            <label for="motivo">Motivo de la consulta</label>
+            <select id="motivo" name="motivo" required>
+                <option value="" disabled selected>Seleccioná una opción...</option>
+                <option value="comprar">Quiero comprar una propiedad</option>
+                <option value="vender">Quiero vender una propiedad (Tasación)</option>
+                <option value="alquilar">Busco un alquiler</option>
+                <option value="ofrecer-alquiler">Quiero poner mi propiedad en alquiler</option>
+                <option value="otro">Otra consulta</option>
+            </select>
+        </div>
 
-</form>
-                
-                <div class="fila-inputs">
-                    <div class="grupo-input">
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required>
-                    </div>
-                    
-                    <div class="grupo-input">
-                        <label for="telefono">Teléfono / WhatsApp</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: 11 1234 5678" required>
-                    </div>
-                </div>
+        <div class="grupo-input">
+            <label for="mensaje">Mensaje</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Contanos qué estás buscando o en qué podemos ayudarte..." required></textarea>
+        </div>
 
-                <div class="grupo-input">
-                    <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
-                </div>
-
-                <div class="grupo-input">
-                    <label for="motivo">Motivo de la consulta</label>
-                    <select id="motivo" name="motivo" required>
-                        <option value="" disabled selected>Seleccioná una opción...</option>
-                        <option value="comprar">Quiero comprar una propiedad</option>
-                        <option value="vender">Quiero vender una propiedad (Tasación)</option>
-                        <option value="alquilar">Busco un alquiler</option>
-                        <option value="ofrecer-alquiler">Quiero poner mi propiedad en alquiler</option>
-                        <option value="otro">Otra consulta</option>
-                    </select>
-                </div>
-
-                <div class="grupo-input">
-                    <label for="mensaje">Mensaje</label>
-                    <textarea id="mensaje" name="mensaje" placeholder="Contanos qué estás buscando o en qué podemos ayudarte..." required></textarea>
-                </div>
-
-                <button type="submit" class="btn-enviar">Enviar Mensaje</button>
-            </form>
-        </section>
+        <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+    </form>
+</section>
 
     </main>
 
@@ -339,65 +341,6 @@
         <button type="button" class="btn-flotante btn-scroll-top" id="scrollTopBtn" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
     </div>
 
-<script>
-    // Lógica para el botón de ir arriba (ESTO LO DEJAS COMO ESTABA)
-    const scrollTopBtn = document.getElementById("scrollTopBtn");
-    window.onscroll = function () {
-      if (
-        document.body.scrollTop > 300 ||
-        document.documentElement.scrollTop > 300
-      ) {
-        scrollTopBtn.style.display = "flex";
-      } else {
-        scrollTopBtn.style.display = "none";
-      }
-    };
-    window.scrollToTop = function () {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    };
 
-    // --- CÓDIGO CORREGIDO PARA ENVIAR EL FORMULARIO ---
-    document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
-        event.preventDefault(); // Evita que la página recargue
-
-        // Cambiamos el texto del botón para que el usuario sepa que está cargando
-        const boton = this.querySelector('button[type="submit"]');
-        const textoOriginal = boton.innerText;
-        boton.innerText = 'Enviando...';
-
-        // Empaquetamos los datos en formato JSON usando los IDs de tus inputs
-        const datos = {
-            Nombre: document.getElementById('nombre').value,
-            Telefono: document.getElementById('telefono').value,
-            Email: document.getElementById('email').value,
-            Motivo: document.getElementById('motivo').value,
-            Mensaje: document.getElementById('mensaje').value
-        };
-
-        // Enviamos los datos directo al mail
-        fetch("https://formsubmit.co/ajax/mazoudpropiedades@gmail.com", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(datos)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Acá se ejecuta cuando el mensaje ya se envió
-            alert("¡Mensaje enviado con éxito! Nos contactaremos a la brevedad.");
-            this.reset(); // Limpia los campos del formulario
-            boton.innerText = textoOriginal; // Vuelve el botón a la normalidad
-        })
-        .catch(error => {
-            alert("Hubo un error al enviar el mensaje. Por favor, intentá de nuevo.");
-            boton.innerText = textoOriginal;
-        });
-    });
-</script>
 </body>
 </html>
