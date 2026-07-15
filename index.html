@@ -655,29 +655,39 @@
 
   <div class="form-card">
     <h3>Solicitar tasación</h3>
-    <div class="fg">
-      <label>Nombre completo</label>
-      <input type="text" placeholder="Tu nombre y apellido">
-    </div>
-    <div class="fg">
-      <label>Teléfono</label>
-      <input type="tel" placeholder="+54 11 XXXX-XXXX">
-    </div>
-    <div class="fg">
-      <label>Tipo de propiedad</label>
-      <select>
-        <option>Departamento</option>
-        <option>Casa / PH</option>
-        <option>Local / Oficina</option>
-        <option>Terreno</option>
-      </select>
-    </div>
-    <div class="fg">
-      <label>Dirección o zona</label>
-      <input type="text" placeholder="Ej: Palermo, Av. Santa Fe 1234">
-    </div>
-    <button class="form-submit" onclick="enviarTasacion()">Enviar solicitud</button>
-  </div>
+    
+    <form action="https://formsubmit.co/mazoudpropiedades@gmail.com" method="POST">
+        <!-- Configuración FormSubmit -->
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="Nueva solicitud de Tasación">
+        <input type="hidden" name="_next" value="https://romazoud.github.io/mazoudpropiedades/tasaciones.html">
+
+        <div class="fg">
+            <label>Nombre completo</label>
+            <input type="text" name="nombre" placeholder="Tu nombre y apellido" required>
+        </div>
+        <div class="fg">
+            <label>Teléfono</label>
+            <input type="tel" name="telefono" placeholder="+54 11 XXXX-XXXX" required>
+        </div>
+        <div class="fg">
+            <label>Tipo de propiedad</label>
+            <select name="tipo_propiedad">
+                <option value="Departamento">Departamento</option>
+                <option value="Casa / PH">Casa / PH</option>
+                <option value="Local / Oficina">Local / Oficina</option>
+                <option value="Terreno">Terreno</option>
+            </select>
+        </div>
+        <div class="fg">
+            <label>Dirección o zona</label>
+            <input type="text" name="zona_direccion" placeholder="Ej: Palermo, Av. Santa Fe 1234" required>
+        </div>
+        
+        <!-- Botón de envío estándar (sin onclick) -->
+        <button type="submit" class="form-submit">Enviar solicitud</button>
+    </form>
+</div>
 </section>
 
 <section id="equipo">
@@ -768,22 +778,7 @@
   }
 
   /* ── Formulario tasación ── */
-  function enviarTasacion() {
-    const campos = document.querySelectorAll('#tasaciones input, #tasaciones select');
-    let ok = true;
-    campos.forEach(c => {
-      if (!c.value.trim()) { c.style.borderColor = 'var(--rojo)'; ok = false; }
-      else c.style.borderColor = '';
-    });
-    if (!ok) { alert('Por favor completá todos los campos.'); return; }
-
-    const nombre = campos[0].value;
-    const tel    = campos[1].value;
-    const tipo   = campos[2].value;
-    const dir    = campos[3].value;
-    const msg = `Hola Mazoud! Quiero solicitar una tasación.\nNombre: ${nombre}\nTeléfono: ${tel}\nPropiedad: ${tipo}\nZona: ${dir}`;
-    window.open(`https://wa.me/541122947971?text=${encodeURIComponent(msg)}`, '_blank');
-  }
+  
 
   /* ── Header shadow al hacer scroll ── */
   window.addEventListener('scroll', () => {
