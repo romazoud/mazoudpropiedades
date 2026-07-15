@@ -340,7 +340,7 @@
     </div>
 
 <script>
-    // Lógica para el botón de ir arriba (ESTO YA LO TENÍAS)
+    // Lógica para el botón de ir arriba (ESTO LO DEJAS COMO ESTABA)
     const scrollTopBtn = document.getElementById("scrollTopBtn");
     window.onscroll = function () {
       if (
@@ -359,38 +359,45 @@
       });
     };
 
-   document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita que la página recargue
+    // --- CÓDIGO CORREGIDO PARA ENVIAR EL FORMULARIO ---
+    document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita que la página recargue
 
-    // Cambiamos el texto del botón para que el usuario sepa que está cargando
-    const boton = this.querySelector('button[type="submit"]');
-    const textoOriginal = boton.innerText;
-    boton.innerText = 'Enviando...';
+        // Cambiamos el texto del botón para que el usuario sepa que está cargando
+        const boton = this.querySelector('button[type="submit"]');
+        const textoOriginal = boton.innerText;
+        boton.innerText = 'Enviando...';
 
-    // Recolectamos todos los datos del formulario automáticamente
-    const formData = new FormData(this);
+        // Empaquetamos los datos en formato JSON usando los IDs de tus inputs
+        const datos = {
+            Nombre: document.getElementById('nombre').value,
+            Telefono: document.getElementById('telefono').value,
+            Email: document.getElementById('email').value,
+            Motivo: document.getElementById('motivo').value,
+            Mensaje: document.getElementById('mensaje').value
+        };
 
-    // Enviamos los datos directo al mail usando FormSubmit por atrás
-    // Asegurate de cambiar el mail si vas a usar otro
-    fetch("https://formsubmit.co/ajax/mazoudpropiedades@gmail.com", {
-        method: "POST",
-        body: formData,
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Acá se ejecuta cuando el mensaje ya se envió
-        alert("¡Mensaje enviado con éxito! Nos contactaremos a la brevedad.");
-        this.reset(); // Limpia los campos del formulario
-        boton.innerText = textoOriginal; // Vuelve el botón a la normalidad
-    })
-    .catch(error => {
-        alert("Hubo un error al enviar el mensaje. Por favor, intentá de nuevo.");
-        boton.innerText = textoOriginal;
+        // Enviamos los datos directo al mail
+        fetch("https://formsubmit.co/ajax/mazoudpropiedades@gmail.com", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(datos)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Acá se ejecuta cuando el mensaje ya se envió
+            alert("¡Mensaje enviado con éxito! Nos contactaremos a la brevedad.");
+            this.reset(); // Limpia los campos del formulario
+            boton.innerText = textoOriginal; // Vuelve el botón a la normalidad
+        })
+        .catch(error => {
+            alert("Hubo un error al enviar el mensaje. Por favor, intentá de nuevo.");
+            boton.innerText = textoOriginal;
+        });
     });
-});
 </script>
 </body>
 </html>
