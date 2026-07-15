@@ -287,10 +287,7 @@
         <section class="formulario-caja">
             <h2>Envíanos tu consulta</h2>
             
-            <form action="https://formsubmit.co/mazoudpropiedades@gmail.com" method="POST">
-                
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_next" value="https://romazoud.github.io/mazoudpropiedades/contacto.html">
+            <form id="formulario-inmobiliaria"></form>
                 
                 <div class="fila-inputs">
                     <div class="grupo-input">
@@ -338,7 +335,7 @@
     </div>
 
 <script>
-    // Lógica para el botón de ir arriba
+    // Lógica para el botón de ir arriba (ESTO YA LO TENÍAS)
     const scrollTopBtn = document.getElementById("scrollTopBtn");
     window.onscroll = function () {
       if (
@@ -356,6 +353,33 @@
         behavior: "smooth"
       });
     };
+
+    // --- NUEVO CÓDIGO PARA WHATSAPP ---
+    document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita que la página intente recargarse
+
+        // Capturamos los datos usando los IDs que ya les pusiste en tu HTML
+        const nombre = document.getElementById('nombre').value;
+        const telefono = document.getElementById('telefono').value;
+        const correo = document.getElementById('email').value;
+        const motivo = document.getElementById('motivo').options[document.getElementById('motivo').selectedIndex].text;
+        const mensaje = document.getElementById('mensaje').value;
+
+        // Usamos el número que tenés en el botón flotante
+        const numeroDestino = "5491122947971"; 
+
+        // Armamos el texto
+        const texto = `¡Hola! Vengo desde la web de Mazoud Propiedades.%0A%0A`
+                    + `*Nombre:* ${nombre}%0A`
+                    + `*Teléfono:* ${telefono}%0A`
+                    + `*Correo:* ${correo}%0A`
+                    + `*Motivo:* ${motivo}%0A`
+                    + `*Mensaje:* ${mensaje}`;
+
+        // Redirigimos a WhatsApp
+        const urlWA = `https://wa.me/${numeroDestino}?text=${texto}`;
+        window.open(urlWA, '_blank');
+    });
 </script>
 </body>
 </html>
