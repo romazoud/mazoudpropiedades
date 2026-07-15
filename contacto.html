@@ -287,7 +287,12 @@
         <section class="formulario-caja">
             <h2>Envíanos tu consulta</h2>
             
-            <form id="formulario-inmobiliaria"></form>
+
+<form id="formulario-inmobiliaria">
+
+    <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+
+</form>
                 
                 <div class="fila-inputs">
                     <div class="grupo-input">
@@ -354,32 +359,38 @@
       });
     };
 
-    // --- NUEVO CÓDIGO PARA WHATSAPP ---
-    document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
-        event.preventDefault(); // Evita que la página intente recargarse
+   document.getElementById('formulario-inmobiliaria').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evita que la página recargue
 
-        // Capturamos los datos usando los IDs que ya les pusiste en tu HTML
-        const nombre = document.getElementById('nombre').value;
-        const telefono = document.getElementById('telefono').value;
-        const correo = document.getElementById('email').value;
-        const motivo = document.getElementById('motivo').options[document.getElementById('motivo').selectedIndex].text;
-        const mensaje = document.getElementById('mensaje').value;
+    // Cambiamos el texto del botón para que el usuario sepa que está cargando
+    const boton = this.querySelector('button[type="submit"]');
+    const textoOriginal = boton.innerText;
+    boton.innerText = 'Enviando...';
 
-        // Usamos el número que tenés en el botón flotante
-        const numeroDestino = "5491122947971"; 
+    // Recolectamos todos los datos del formulario automáticamente
+    const formData = new FormData(this);
 
-        // Armamos el texto
-        const texto = `¡Hola! Vengo desde la web de Mazoud Propiedades.%0A%0A`
-                    + `*Nombre:* ${nombre}%0A`
-                    + `*Teléfono:* ${telefono}%0A`
-                    + `*Correo:* ${correo}%0A`
-                    + `*Motivo:* ${motivo}%0A`
-                    + `*Mensaje:* ${mensaje}`;
-
-        // Redirigimos a WhatsApp
-        const urlWA = `https://wa.me/${numeroDestino}?text=${texto}`;
-        window.open(urlWA, '_blank');
+    // Enviamos los datos directo al mail usando FormSubmit por atrás
+    // Asegurate de cambiar el mail si vas a usar otro
+    fetch("https://formsubmit.co/ajax/mazoudpropiedades@gmail.com", {
+        method: "POST",
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Acá se ejecuta cuando el mensaje ya se envió
+        alert("¡Mensaje enviado con éxito! Nos contactaremos a la brevedad.");
+        this.reset(); // Limpia los campos del formulario
+        boton.innerText = textoOriginal; // Vuelve el botón a la normalidad
+    })
+    .catch(error => {
+        alert("Hubo un error al enviar el mensaje. Por favor, intentá de nuevo.");
+        boton.innerText = textoOriginal;
     });
+});
 </script>
 </body>
 </html>
