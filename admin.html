@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- Firebase SDK (compat, no requiere build tools) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -134,7 +134,7 @@
   </div>
 </div>
 
-<!-- ============ PANEL (visible solo logueado) ============ -->
+<!-- ============ PANEL ============ -->
 <div id="panel">
   <header class="admin-header">
     <h2>Panel de Propiedades</h2>
@@ -145,7 +145,6 @@
   </header>
 
   <main>
-    <!-- FORMULARIO -->
     <div class="panel-card">
       <h3 id="form-title">Cargar nueva propiedad</h3>
       <input type="hidden" id="edit-id" value="">
@@ -193,41 +192,23 @@
       </div>
 
       <div class="fg">
-        <label>Dirección (opcional, no se muestra públicamente si preferís)</label>
+        <label>Dirección (opcional)</label>
         <input type="text" id="f-direccion" placeholder="Ej: Av. Santa Fe 1234">
       </div>
 
       <div class="grid2">
-        <div class="fg">
-          <label>Ambientes</label>
-          <input type="number" id="f-ambientes" placeholder="Ej: 3">
-        </div>
-        <div class="fg">
-          <label>Dormitorios</label>
-          <input type="number" id="f-dormitorios" placeholder="Ej: 2">
-        </div>
+        <div class="fg"><label>Ambientes</label><input type="number" id="f-ambientes" placeholder="Ej: 3"></div>
+        <div class="fg"><label>Dormitorios</label><input type="number" id="f-dormitorios" placeholder="Ej: 2"></div>
       </div>
 
       <div class="grid2">
-        <div class="fg">
-          <label>Baños</label>
-          <input type="number" id="f-banos" placeholder="Ej: 1">
-        </div>
-        <div class="fg">
-          <label>m² cubiertos</label>
-          <input type="number" id="f-m2cub" placeholder="Ej: 65">
-        </div>
+        <div class="fg"><label>Baños</label><input type="number" id="f-banos" placeholder="Ej: 1"></div>
+        <div class="fg"><label>m² cubiertos</label><input type="number" id="f-m2cub" placeholder="Ej: 65"></div>
       </div>
 
       <div class="grid2">
-        <div class="fg">
-          <label>m² totales</label>
-          <input type="number" id="f-m2tot" placeholder="Ej: 70">
-        </div>
-        <div class="fg">
-          <label>Antigüedad (años)</label>
-          <input type="number" id="f-antiguedad" placeholder="Ej: 5">
-        </div>
+        <div class="fg"><label>m² totales</label><input type="number" id="f-m2tot" placeholder="Ej: 70"></div>
+        <div class="fg"><label>Antigüedad (años)</label><input type="number" id="f-m2tot" placeholder="Ej: 5"></div>
       </div>
 
       <div class="check-row">
@@ -245,31 +226,28 @@
         <input type="file" id="f-fotos" accept="image/*" multiple>
         <div id="fotos-preview"></div>
       </div>
-<div class="fg">
-    <label>Plano de la propiedad (opcional)</label>
-    <input type="file" id="f-plano" accept="image/*">
-    <div id="plano-preview"></div>
-</div>
-<div class="check-row">
 
-<input type="checkbox" id="f-destacada">
+      <div class="fg">
+        <label>Plano de la propiedad (opcional)</label>
+        <input type="file" id="f-plano" accept="image/*">
+        <div id="plano-preview"></div>
+      </div>
 
-<label>Mostrar como propiedad destacada</label>
+      <div class="check-row">
+        <input type="checkbox" id="f-destacada">
+        <label for="f-destacada">Mostrar como propiedad destacada</label>
+      </div>
 
-</div>
+      <div class="fg">
+        <label>Google Maps</label>
+        <input type="text" id="f-mapa" placeholder="Pegá el enlace de Google Maps">
+      </div>
+
       <button class="btn-red" id="btn-guardar" onclick="guardarPropiedad()">Publicar propiedad</button>
       <button class="btn-outline" id="btn-cancelar-edicion" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button>
       <p id="form-msg"></p>
     </div>
-<div class="fg">
-    <label>Google Maps</label>
-    <input
-        type="text"
-        id="f-mapa"
-        placeholder="Pegá el enlace de Google Maps"
-    >
-</div>
-    <!-- LISTADO -->
+
     <div class="panel-card">
       <h3>Propiedades cargadas (<span id="contador">0</span>)</h3>
       <div id="lista-propiedades"></div>
@@ -279,9 +257,6 @@
 </div>
 
 <script>
-/* ============================================================
-   AUTENTICACIÓN
-   ============================================================ */
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
@@ -300,25 +275,14 @@ function iniciarSesion() {
   const errBox = document.getElementById('login-error');
   errBox.textContent = '';
 
-  if (!email || !pass) {
-    errBox.textContent = 'Completá email y contraseña.';
-    return;
-  }
+  if (!email || !pass) { errBox.textContent = 'Completá email y contraseña.'; return; }
 
   auth.signInWithEmailAndPassword(email, pass)
-    .catch(err => {
-      errBox.textContent = 'Email o contraseña incorrectos.';
-      console.error(err);
-    });
+    .catch(err => { errBox.textContent = 'Email o contraseña incorrectos.'; console.error(err); });
 }
 
-function cerrarSesion() {
-  auth.signOut();
-}
+function cerrarSesion() { auth.signOut(); }
 
-/* ============================================================
-   FOTOS - preview antes de subir
-   ============================================================ */
 let archivosSeleccionados = [];
 
 document.getElementById('f-fotos').addEventListener('change', function(e) {
@@ -336,16 +300,15 @@ document.getElementById('f-fotos').addEventListener('change', function(e) {
   });
 });
 
-/* ============================================================
-   GUARDAR / EDITAR PROPIEDAD
-   ============================================================ */
 function limpiarFormulario() {
   ['f-titulo','f-precio','f-zona','f-direccion','f-ambientes','f-dormitorios',
-   'f-banos','f-m2cub','f-m2tot','f-antiguedad','f-descripcion'].forEach(id => {
-    document.getElementById(id).value = '';
+   'f-banos','f-m2cub','f-m2tot','f-antiguedad','f-descripcion', 'f-mapa'].forEach(id => {
+    if(document.getElementById(id)) document.getElementById(id).value = '';
   });
   document.getElementById('f-cochera').checked = false;
+  document.getElementById('f-destacada').checked = false;
   document.getElementById('f-fotos').value = '';
+  document.getElementById('f-plano').value = '';
   document.getElementById('fotos-preview').innerHTML = '';
   archivosSeleccionados = [];
   document.getElementById('edit-id').value = '';
@@ -354,9 +317,7 @@ function limpiarFormulario() {
   document.getElementById('btn-cancelar-edicion').style.display = 'none';
 }
 
-function cancelarEdicion() {
-  limpiarFormulario();
-}
+function cancelarEdicion() { limpiarFormulario(); }
 
 async function guardarPropiedad() {
   const msg = document.getElementById('form-msg');
@@ -391,24 +352,22 @@ async function guardarPropiedad() {
     banos: Number(document.getElementById('f-banos').value) || null,
     m2Cubiertos: Number(document.getElementById('f-m2cub').value) || null,
     m2Totales: Number(document.getElementById('f-m2tot').value) || null,
-    antiguedad: Number(document.getElementById('f-antiguedad').value) || null,
+    antiguedad: Number(document.getElementById('f-antiguedad') ? document.getElementById('f-antiguedad').value : 0) || null,
     cochera: document.getElementById('f-cochera').checked,
     descripcion: document.getElementById('f-descripcion').value.trim(),
-
     mapa: document.getElementById('f-mapa').value.trim(),
     destacada: document.getElementById('f-destacada').checked,
-
     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     cargadoPor: auth.currentUser.email
-};
+  };
+
   try {
     let docId = editId;
     let urlsFotosNuevas = [];
 
-    // 1. SUBIR FOTOS A CLOUDINARY PRIMERO
     if (archivosSeleccionados.length > 0) {
-      const cloudName = 'mazoud-propiedades'; // <--- ACÁ PONÉS TU CLOUD NAME (Ej: 'mazoud123')
-      const uploadPreset = 'mazoud-propiedades'; // <--- ACÁ PONÉS TU PRESET (Ej: 'mazoud-propiedades')
+      const cloudName = 'mazoud-propiedades'; 
+      const uploadPreset = 'mazoud-propiedades'; 
       const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
       for (const file of archivosSeleccionados) {
@@ -416,26 +375,18 @@ async function guardarPropiedad() {
         formData.append('file', file);
         formData.append('upload_preset', uploadPreset);
 
-        const response = await fetch(cloudinaryUrl, {
-          method: 'POST',
-          body: formData
-        });
-        
+        const response = await fetch(cloudinaryUrl, { method: 'POST', body: formData });
         const data = await response.json();
-        if (data.secure_url) {
-          urlsFotosNuevas.push(data.secure_url);
-        }
+        if (data.secure_url) urlsFotosNuevas.push(data.secure_url);
       }
     }
 
-    // 2. GUARDAR DATOS EN FIRESTORE
     if (!docId) {
       datos.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
-      datos.fotos = urlsFotosNuevas; // Guardamos los links de Cloudinary
+      datos.fotos = urlsFotosNuevas; 
       const nuevoDoc = await db.collection('propiedades').add(datos);
       docId = nuevoDoc.id;
     } else {
-      // Si es edición, agregamos las fotos nuevas a las existentes
       const docRef = db.collection('propiedades').doc(docId);
       const docSnap = await docRef.get();
       const fotosExistentes = docSnap.data().fotos || [];
@@ -444,7 +395,7 @@ async function guardarPropiedad() {
     }
 
     msg.className = 'ok';
-    msg.textContent = editId ? 'Propiedad actualizada correctamente.' : 'Propiedad publicada correctamente.';
+    msg.textContent = editId ? 'Propiedad actualizada.' : 'Propiedad publicada.';
     limpiarFormulario();
     cargarPropiedades();
 
@@ -458,9 +409,6 @@ async function guardarPropiedad() {
   }
 }
 
-/* ============================================================
-   LISTADO / EDITAR / BORRAR
-   ============================================================ */
 function cargarPropiedades() {
   db.collection('propiedades').orderBy('creadoEn', 'desc').onSnapshot(snapshot => {
     const cont = document.getElementById('lista-propiedades');
@@ -468,10 +416,7 @@ function cargarPropiedades() {
     cont.innerHTML = '';
     document.getElementById('contador').textContent = snapshot.size;
 
-    if (snapshot.empty) {
-      vacio.style.display = 'block';
-      return;
-    }
+    if (snapshot.empty) { vacio.style.display = 'block'; return; }
     vacio.style.display = 'none';
 
     snapshot.forEach(doc => {
@@ -514,9 +459,11 @@ async function editarPropiedad(id) {
   document.getElementById('f-banos').value = p.banos || '';
   document.getElementById('f-m2cub').value = p.m2Cubiertos || '';
   document.getElementById('f-m2tot').value = p.m2Totales || '';
-  document.getElementById('f-antiguedad').value = p.antiguedad || '';
+  if(document.getElementById('f-antiguedad')) document.getElementById('f-antiguedad').value = p.antiguedad || '';
   document.getElementById('f-cochera').checked = !!p.cochera;
+  document.getElementById('f-destacada').checked = !!p.destacada;
   document.getElementById('f-descripcion').value = p.descripcion || '';
+  document.getElementById('f-mapa').value = p.mapa || '';
 
   document.getElementById('form-title').textContent = 'Editando propiedad';
   document.getElementById('btn-guardar').textContent = 'Guardar cambios';
@@ -527,13 +474,7 @@ async function editarPropiedad(id) {
 
 async function borrarPropiedad(id) {
   if (!confirm('¿Seguro que querés borrar esta propiedad? Esta acción no se puede deshacer.')) return;
-
-  try {
-    await db.collection('propiedades').doc(id).delete();
-  } catch (err) {
-    console.error(err);
-    alert('Ocurrió un error al borrar la propiedad.');
-  }
+  try { await db.collection('propiedades').doc(id).delete(); } catch (err) { console.error(err); alert('Ocurrió un error al borrar.'); }
 }
 </script>
 </body>
