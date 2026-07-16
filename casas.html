@@ -33,7 +33,9 @@ a{ text-decoration:none; color:inherit; }
   nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo-intenso); transition: var(--transicion); }
   nav a:hover::after, nav a.activo::after { width: 100%; }
 
-/* VISTA LISTADO */
+/* ========================================= */
+/* ESTILOS DE LA VISTA LISTADO               */
+/* ========================================= */
 .hero{ min-height:55vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:160px 5% 100px; background: linear-gradient(rgba(0,0,0,0.72),rgba(0,0,0,0.82)), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1400&auto=format&fit=crop') center/cover; }
 .hero-content h1{ font-size:clamp(42px,7vw,80px); font-weight:900; text-transform:uppercase; letter-spacing:2px; margin-bottom:18px; }
 .hero-content h1 span{ color:var(--rojo); }
@@ -65,41 +67,87 @@ a{ text-decoration:none; color:inherit; }
 .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.2); color:#fff; }
 .card:hover .btn-outline{ border-color:var(--rojo); color:var(--rojo); }
 
-/* VISTA DETALLE DINAMICA */
+/* ========================================= */
+/* ESTILOS DE LA VISTA DETALLE (PLANOS)      */
+/* ========================================= */
+.vista-propiedad { display: none; /* Oculto por defecto */ padding-bottom: 80px; }
+
+.hero-propiedad{ margin-top: 90px; height: 50vh; min-height: 400px; background-position: center; background-size: cover; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 5% 50px 5%; position: relative;}
+/* Oscurecemos la parte de abajo para que lea bien el texto */
+.hero-propiedad::before { content:''; position:absolute; bottom:0; left:0; width:100%; height:100%; background: linear-gradient(to top, var(--negro) 0%, transparent 80%); z-index:1;}
+.hero-propiedad > * { position: relative; z-index: 2; }
+
+.btn-volver { align-self: flex-start; color: var(--blanco); font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; background: none; border: none; cursor: pointer; transition: var(--transicion); font-family: 'Poppins', sans-serif;}
+.btn-volver:hover { color: var(--rojo); }
+.hero-propiedad h1 { font-size: clamp(32px, 5vw, 55px); font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+.hero-propiedad .precio-hero { font-size: 35px; font-weight: 700; color: var(--rojo); margin-bottom: 10px; }
+.hero-propiedad .ubicacion-hero { font-size: 16px; color: var(--texto); font-weight: 400; }
+
+.seccion-plano { padding: 60px 5%; background-color: var(--gris); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); margin: 40px 0; }
+.contenedor-plano { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center; }
+.info-plano h2 { font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+.info-plano .area-total { font-size: 14px; color: var(--texto); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+.lista-ambientes { list-style: none; }
+.lista-ambientes li { display: flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 13px; color: var(--blanco); transition: 0.3s; }
+.lista-ambientes li:hover { border-bottom-color: var(--rojo); color: var(--rojo); padding-left: 10px; }
+.lista-ambientes li span:first-child { font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.lista-ambientes li span:last-child { font-weight: 700; color: var(--texto); }
+.lista-ambientes li:hover span:last-child { color: var(--rojo); }
+
+.imagen-plano { width: 100%; height: 100%; border-radius: 4px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
+.imagen-plano img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.barra-contacto { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--gris-claro); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); border-top: 1px solid var(--rojo); }
+.barra-contacto p { font-size: 14px; font-weight: 600; }
+.botones-accion { display: flex; gap: 15px; }
+.btn-accion { padding: 12px 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer; border-radius: 2px; transition: 0.3s; color:#fff;}
+.btn-wsp { background: #25D366; } .btn-wsp:hover { background: #1ebd57; }
+.btn-agendar { background: var(--rojo); } .btn-agendar:hover { background: #a50e1a; }
+
+footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.3); font-size:12px; }
+
+/* RESPONSIVE */
+@media(max-width:1000px){ .grid{ grid-template-columns:repeat(2,1fr); } .filtro-box{ grid-template-columns:1fr 1fr; } .contenedor-plano { grid-template-columns: 1fr; gap: 40px; } }
+@media(max-width:768px){ nav{ display:none; } .grid{ grid-template-columns:1fr; } .filtro-box{ grid-template-columns:1fr; } .hero-propiedad h1 { font-size: 28px; } .barra-contacto { flex-direction: column; gap: 15px; text-align: center; } .botones-accion { width: 100%; } .btn-accion { flex: 1; text-align: center; } }
+/* ========================================= */
+/* ESTILO DETALLE ARQUITECTÓNICO (TIPO PLANO)*/
+/* ========================================= */
 #vista-detalle-dinamica { display: none; padding-bottom: 80px; }
 
-.arch-hero { width: 100%; height: 60vh; min-height: 400px; margin-top: 90px; position: relative; }
+.arch-hero {
+  width: 100%; height: 60vh; min-height: 400px;
+  margin-top: 90px; position: relative;
+}
 .arch-hero img { width: 100%; height: 100%; object-fit: cover; }
-.arch-btn-volver { position: absolute; top: 20px; left: 5%; z-index: 10; background: rgba(13, 13, 13, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: .3s; }
+.arch-btn-volver {
+  position: absolute; top: 20px; left: 5%; z-index: 10;
+  background: rgba(13, 13, 13, 0.8); color: #fff; border: 1px solid var(--border);
+  padding: 10px 20px; border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: .3s;
+}
 .arch-btn-volver:hover { border-color: var(--rojo); color: var(--rojo); }
 
-.arch-mid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; max-width: 1300px; margin: 80px auto; padding: 0 5%; align-items: center; }
+.arch-mid {
+  display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px;
+  max-width: 1300px; margin: 80px auto; padding: 0 5%; align-items: center;
+}
 .arch-text h2 { font-size: 28px; font-weight: 800; margin-bottom: 24px; color: var(--blanco); text-transform: uppercase; letter-spacing: 1px; }
 .arch-text h2 span { color: var(--rojo); }
 .arch-text p { color: var(--texto); line-height: 1.9; font-size: 14px; white-space: pre-wrap; font-weight: 300; }
 .arch-plan { width: 100%; }
 .arch-plan img { width: 100%; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
 
-.arch-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1300px; margin: 0 auto; padding: 0 5%; }
+.arch-gallery {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  max-width: 1300px; margin: 0 auto; padding: 0 5%;
+}
 .arch-gallery img { width: 100%; height: 350px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
-
-.barra-contacto { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--gris-claro); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); border-top: 1px solid var(--rojo); }
-.barra-contacto p { font-size: 14px; font-weight: 600; }
-.botones-accion { display: flex; gap: 15px; }
-.btn-accion { padding: 12px 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer; border-radius: 2px; transition: 0.3s; color:#fff; text-decoration:none; display:inline-block;}
-.btn-wsp { background: #25D366; } .btn-wsp:hover { background: #1ebd57; }
-.btn-agendar { background: var(--rojo); } .btn-agendar:hover { background: #a50e1a; }
-
-footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.3); font-size:12px; }
 
 @media(max-width: 900px) {
   .arch-mid { grid-template-columns: 1fr; gap: 40px; margin: 50px auto; }
   .arch-gallery { grid-template-columns: 1fr; }
-  .grid{ grid-template-columns:repeat(2,1fr); }
 }
-@media(max-width:768px){ nav{ display:none; } .grid{ grid-template-columns:1fr; } .filtro-box{ grid-template-columns:1fr; } .barra-contacto { flex-direction: column; gap: 15px; text-align: center; } .botones-accion { width: 100%; } .btn-accion { flex: 1; text-align: center; } }
 </style>
-
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
@@ -114,7 +162,7 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
   <nav>
     <a href="index.html">Inicio</a>
     <a href="departamentos.html">Departamentos</a>
-    <a class="activo" onclick="cerrarDetalleArquitectura()">Casas</a>
+    <a class="activo" onclick="volverAlListado()">Casas</a>
     <a href="locales.html">Locales</a>
     <a href="articulos.html">Artículos</a>
     <a href="tasaciones.html">Tasaciones</a>
@@ -140,39 +188,159 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
   </section>
 
  <section class="propiedades">
-  <div class="grid" id="contenedor-propiedades"></div>
- </section>
+  <!-- Agregamos el id="contenedor-propiedades" y dejamos vacío adentro -->
+  <div class="grid" id="contenedor-propiedades">
+      
+  </div>
+  <!-- Contenedor donde se va a dibujar el detalle arquitectónico -->
+<div id="vista-detalle-dinamica"></div>
+</section>
     
-  <footer>© 2026 Mazoud Propiedades — Todos los derechos reservados.</footer>
+  <footer id="contacto">© 2026 Mazoud Propiedades — Todos los derechos reservados.</footer>
 </div>
 
-<div id="vista-detalle-dinamica"></div>
+<div id="propiedad-1" class="vista-propiedad">
+  <section class="hero-propiedad" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1600&auto=format&fit=crop');">
+    <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver al listado</button>
+    <div class="tag" style="margin-bottom: 10px;">Venta</div>
+    <h1>Casa Moderna con Jardín</h1>
+    <div class="precio-hero">USD 320.000</div>
+    <div class="ubicacion-hero"><i class="fas fa-map-marker-alt"></i> Castelar Norte, Buenos Aires</div>
+  </section>
+
+  <section class="seccion-plano">
+    <div class="contenedor-plano">
+      <div class="info-plano">
+        <h2>Distribución</h2>
+        <p class="area-total">Superficie Cubierta: 180 M²</p>
+        <ul class="lista-ambientes">
+          <li><span>Living Comedor</span> <span>32.5 m²</span></li>
+          <li><span>Cocina Integrada</span> <span>14.2 m²</span></li>
+          <li><span>Dormitorio Principal</span> <span>18.6 m²</span></li>
+          <li><span>Dormitorio Secundario</span> <span>12.4 m²</span></li>
+          <li><span>Baño Principal</span> <span>8.5 m²</span></li>
+          <li><span>Galería / Quincho</span> <span>25.0 m²</span></li>
+        </ul>
+      </div>
+      <div class="imagen-plano">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop" alt="Plano Propiedad 1">
+      </div>
+    </div>
+  </section>
+
+  <div class="barra-contacto">
+    <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+    <div class="botones-accion">
+      <a href="https://wa.me/5491100000000" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
+    </div>
+  </div>
+</div>
+
+<div id="propiedad-2" class="vista-propiedad">
+  <section class="hero-propiedad" style="background-image: url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1600&auto=format&fit=crop');">
+    <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver al listado</button>
+    <div class="tag" style="margin-bottom: 10px;">Alquiler</div>
+    <h1>Chalet Familiar</h1>
+    <div class="precio-hero">$1.200.000</div>
+    <div class="ubicacion-hero"><i class="fas fa-map-marker-alt"></i> Ituzaingó, Buenos Aires</div>
+  </section>
+
+  <section class="seccion-plano">
+    <div class="contenedor-plano">
+      <div class="info-plano">
+        <h2>Distribución</h2>
+        <p class="area-total">Superficie Cubierta: 210 M²</p>
+        <ul class="lista-ambientes">
+          <li><span>Living Amplio</span> <span>40.0 m²</span></li>
+          <li><span>Cocina Comedor</span> <span>22.0 m²</span></li>
+          <li><span>Suite Principal</span> <span>20.5 m²</span></li>
+          <li><span>Dormitorio Niños</span> <span>15.0 m²</span></li>
+          <li><span>Quincho Techado</span> <span>35.0 m²</span></li>
+        </ul>
+      </div>
+      <div class="imagen-plano">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop" alt="Plano Propiedad 2">
+      </div>
+    </div>
+  </section>
+
+  <div class="barra-contacto">
+    <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+    <div class="botones-accion">
+      <a href="https://wa.me/5491100000000" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
+    </div>
+  </div>
+</div>
+
+<div id="propiedad-3" class="vista-propiedad">
+  <section class="hero-propiedad" style="background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=1600&auto=format&fit=crop');">
+    <button class="btn-volver" onclick="volverAlListado()"><i class="fas fa-arrow-left"></i> Volver al listado</button>
+    <div class="tag" style="margin-bottom: 10px;">Venta</div>
+    <h1>Casa Premium</h1>
+    <div class="precio-hero">USD 580.000</div>
+    <div class="ubicacion-hero"><i class="fas fa-map-marker-alt"></i> Barrio Cerrado, Buenos Aires</div>
+  </section>
+
+  <section class="seccion-plano">
+    <div class="contenedor-plano">
+      <div class="info-plano">
+        <h2>Distribución</h2>
+        <p class="area-total">Superficie Cubierta: 350 M²</p>
+        <ul class="lista-ambientes">
+          <li><span>Recepción y Living</span> <span>55.0 m²</span></li>
+          <li><span>Cocina con Isla</span> <span>28.0 m²</span></li>
+          <li><span>Master Suite con Vestidor</span> <span>45.0 m²</span></li>
+          <li><span>3 Dormitorios en Suite</span> <span>60.0 m²</span></li>
+          <li><span>Playroom / Cine</span> <span>30.0 m²</span></li>
+          <li><span>Garage Triple</span> <span>45.0 m²</span></li>
+        </ul>
+      </div>
+      <div class="imagen-plano">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop" alt="Plano Propiedad 3">
+      </div>
+    </div>
+  </section>
+
+  <div class="barra-contacto">
+    <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+    <div class="botones-accion">
+      <a href="https://wa.me/5491100000000" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
+    </div>
+  </div>
+</div>
 
 <script>
+// Usamos esta variable global para guardar los datos temporalmente
 let propiedadesCargadas = {};
 
 document.addEventListener('DOMContentLoaded', () => {
+  // ATENCIÓN: Cambiar 'Casa / PH' por 'Departamento' o 'Local' según la página
   cargarPropiedadesPublicas('Casa / PH'); 
 });
 
 async function cargarPropiedadesPublicas(tipoFiltro) {
   const contenedor = document.getElementById('contenedor-propiedades');
-  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Cargando propiedades...</p>';
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Cargando propiedades...</p>';
 
   try {
-    const snapshot = await db.collection('propiedades').where('tipo', '==', tipoFiltro).get();
+    const snapshot = await db.collection('propiedades')
+                             .where('tipo', '==', tipoFiltro)
+                             .get();
 
     if (snapshot.empty) {
-      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
+      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
       return;
     }
 
     contenedor.innerHTML = ''; 
-    propiedadesCargadas = {}; 
+    propiedadesCargadas = {}; // Limpiamos el objeto por las dudas
 
     snapshot.forEach(doc => {
       const p = doc.data();
-      propiedadesCargadas[doc.id] = p; 
+      propiedadesCargadas[doc.id] = p; // Guardamos la info para usarla en el detalle
       
       const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
       const precioFormateado = Number(p.precio).toLocaleString('es-AR');
@@ -205,10 +373,11 @@ async function cargarPropiedadesPublicas(tipoFiltro) {
 
   } catch (error) {
     console.error("Error al cargar Firebase:", error);
-    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error al cargar las propiedades.</p>';
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--rojo);">Ocurrió un error al cargar las propiedades.</p>';
   }
 }
 
+// ESTA ES LA FUNCIÓN QUE ARMA EL DISEÑO DE LA IMAGEN
 function mostrarDetalleArquitectura(id) {
   const p = propiedadesCargadas[id];
   if (!p) return;
@@ -217,6 +386,7 @@ function mostrarDetalleArquitectura(id) {
   const detalleDiv = document.getElementById('vista-detalle-dinamica');
   detalleDiv.style.display = 'block';
 
+  // 1. FOTO PRINCIPAL (HERO)
   const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
   
   let htmlDetalle = `
@@ -236,26 +406,30 @@ function mostrarDetalleArquitectura(id) {
       </div>
   `;
 
-  if (p.fotos && p.fotos.length > 1) {
+  // 2. EL PLANO DE LA PROPIEDAD
+  if (p.plano) {
     htmlDetalle += `
       <div class="arch-plan">
-        <img src="${p.fotos[1]}" alt="Plano o vista secundaria">
+        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
       </div>
     `;
   } else {
+    // Si no cargaste plano, dejamos el espacio vacío para que el texto no se deforme
     htmlDetalle += `<div></div>`;
   }
   
   htmlDetalle += `</div>`; 
 
-  if (p.fotos && p.fotos.length > 2) {
+  // 3. GALERÍA DE FOTOS (Arranca desde la segunda foto, porque la primera está en el Hero)
+  if (p.fotos && p.fotos.length > 1) {
     htmlDetalle += `<div class="arch-gallery">`;
-    for (let i = 2; i < p.fotos.length; i++) {
+    for (let i = 1; i < p.fotos.length; i++) {
       htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
     }
     htmlDetalle += `</div>`;
   }
 
+  // 4. GOOGLE MAPS
   if (p.mapa) {
     htmlDetalle += `
       <div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;">
@@ -269,6 +443,7 @@ function mostrarDetalleArquitectura(id) {
     htmlDetalle += `</div>`;
   }
 
+  // 5. BARRA DE CONTACTO WHATSAPP
   const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}".`);
   htmlDetalle += `
     <div class="barra-contacto">
@@ -282,18 +457,13 @@ function mostrarDetalleArquitectura(id) {
 
   detalleDiv.innerHTML = htmlDetalle;
   
+  // Ajustes de diseño para que el mapa ocupe todo el ancho
   const iframeMapa = detalleDiv.querySelector('.mapa-container iframe');
   if(iframeMapa) {
     iframeMapa.style.width = '100%';
     iframeMapa.style.height = '450px';
     iframeMapa.style.border = 'none';
   }
-}
-
-function cerrarDetalleArquitectura() {
-  document.getElementById('vista-detalle-dinamica').style.display = 'none';
-  document.getElementById('vista-listado').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
 </body>
