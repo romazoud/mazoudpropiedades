@@ -763,22 +763,42 @@
 
   /* ── Chips de zonas ── */
   function setZona(btn) {
-    document.querySelector('.search-input').value = btn.textContent;
+    const selectZona = document.querySelector('.search-input');
+    // Buscamos la opción que coincida ignorando acentos para evitar errores
+    const textoBoton = btn.textContent.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    Array.from(selectZona.options).forEach(opcion => {
+        const textoOpcion = opcion.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (textoOpcion === textoBoton) {
+            selectZona.value = opcion.value;
+        }
+    });
   }
 
   /* ── Buscador ── */
   function buscar() {
-    const tipo  = document.querySelector('.search-select').value;
-    const zona  = document.querySelector('.search-input').value.trim();
-    if (!zona) {
-      alert('Por favor ingresá una zona o barrio para buscar.');
+    const tipo = document.querySelector('.search-select').value;
+    const zona = document.querySelector('.search-input').value;
+
+    if (!tipo || tipo === "Tipo") {
+      alert('Por favor seleccioná el Tipo de propiedad (Casa, Departamento o Local).');
       return;
     }
-    alert(`Buscando: ${tipo || 'Cualquier tipo'} en ${zona}\n\nConectá aquí tu sistema de propiedades.`);
-  }
 
-  /* ── Formulario tasación ── */
-  
+    // Definir a qué página ir según el tipo
+    let urlDestino = '';
+    if (tipo.includes('Departamento')) urlDestino = 'departamentos.html';
+    else if (tipo.includes('Casa') || tipo.includes('PH')) urlDestino = 'casas.html';
+    else if (tipo.includes('Local')) urlDestino = 'locales.html';
+
+    // Si además eligió una zona, se la mandamos en el link (ej: casas.html?zona=Merlo)
+    if (zona && zona !== "") {
+      urlDestino += `?zona=${encodeURIComponent(zona)}`;
+    }
+
+    // Ejecutar la redirección
+    window.location.href = urlDestino;
+  }
 
   /* ── Header shadow al hacer scroll ── */
   window.addEventListener('scroll', () => {
@@ -787,27 +807,6 @@
       ? 'rgba(13,13,13,0.99)'
       : 'rgba(13,13,13,0.96)';
   });
-</script>
-<script>
-    function filtrarPropiedades() {
-        const checkboxesCheados = document.querySelectorAll('.check-zona:checked');
-        const zonasSeleccionadas = Array.from(checkboxesCheados).map(checkbox => checkbox.value);
-        const tarjetas = document.querySelectorAll('.card');
-    
-        tarjetas.forEach(tarjeta => {
-            const zonaTarjeta = tarjeta.getAttribute('data-zona');
-    
-            if (zonasSeleccionadas.length === 0) {
-                tarjeta.style.display = 'block';
-            } 
-            else if (zonasSeleccionadas.includes(zonaTarjeta)) {
-                tarjeta.style.display = 'block';
-            } 
-            else {
-                tarjeta.style.display = 'none';
-            }
-        });
-    }
 </script>
 </body>
 </html>
