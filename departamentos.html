@@ -1,493 +1,316 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Departamentos | Mazoud Propiedades</title>
-
 <link rel="icon" type="image/png" href="logoinmo.png">
-
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{ margin:0; padding:0; box-sizing:border-box; }
 
 :root{
   --negro:#0D0D0D;
   --rojo:#C1121F;
   --gris:#1A1A1A;
+  --gris-claro:#2B2B2B;
   --blanco:#FFFFFF;
   --texto:rgba(255,255,255,0.7);
+  --transicion: all 0.3s ease;
 }
 
-body{
-  font-family:'Montserrat',sans-serif;
-  background:var(--negro);
-  color:var(--blanco);
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
-}
-
-/* HEADER */
+body{ font-family:'Montserrat',sans-serif; background:var(--negro); color:var(--blanco); scroll-behavior: smooth; }
+a{ text-decoration:none; color:inherit; }
 
   /* HEADER */
-  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-oscuro); backdrop-filter: blur(10px); }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-claro); backdrop-filter: blur(10px); }
   .logo img { height: 55px; object-fit: contain; }
   nav { display: flex; gap: 35px; }
   nav a { color: var(--blanco); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transicion); position: relative; cursor: pointer; }
-  nav a.activo { color: var(--rojo-intenso); }
-  nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo-intenso); transition: var(--transicion); }
+  nav a.activo { color: var(--rojo); }
+  nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo); transition: var(--transicion); }
   nav a:hover::after, nav a.activo::after { width: 100%; }
 
-/* HERO */
+/* VISTA LISTADO */
+.hero{ min-height:55vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:160px 5% 100px; background: linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400&auto=format&fit=crop') center/cover; }
+.hero-content h1{ font-size:clamp(42px,7vw,80px); font-weight:900; text-transform:uppercase; letter-spacing:2px; margin-bottom:18px; }
+.hero-content h1 span{ color:var(--rojo); }
+.hero-content p{ color:var(--texto); font-size:15px; max-width:600px; margin:auto; line-height:1.8; }
 
-.hero{
-  min-height:55vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:160px 5% 100px;
-  background:
-  linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.8)),
-  url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400&auto=format&fit=crop');
-  background-size:cover;
-  background-position:center;
+.filtros{ padding:50px 5%; background:#111; border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05); }
+.filtro-box{ max-width:1200px; margin:auto; display:grid; grid-template-columns:repeat(4,1fr); gap:15px; }
+.filtro-box select, .filtro-box input{ background:#1a1a1a; border:1px solid rgba(255,255,255,0.08); height:55px; padding:0 16px; color:#fff; outline:none; border-radius:4px; font-size:13px; }
+.buscar-btn{ background:var(--rojo); border:none; color:#fff; font-weight:700; letter-spacing:2px; text-transform:uppercase; border-radius:4px; cursor:pointer; transition:.3s; }
+.buscar-btn:hover{ background:#a50e1a; }
+
+.propiedades{ padding:80px 5%; }
+.grid{ max-width:1300px; margin:auto; display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+.card{ background:var(--gris); overflow:hidden; transition:.35s; border:1px solid rgba(255,255,255,0.05); cursor:pointer; }
+.card:hover{ transform:translateY(-6px); border-color:rgba(193,18,31,0.4); }
+.card-img{ height:280px; overflow:hidden; }
+.card-img img{ width:100%; height:100%; object-fit:cover; transition:.5s; }
+.card:hover .card-img img{ transform:scale(1.05); }
+.card-body{ padding:24px; }
+.tag{ display:inline-block; background:rgba(193,18,31,0.1); border:1px solid rgba(193,18,31,0.4); color:var(--rojo); font-size:10px; font-weight:700; letter-spacing:2px; padding:8px 14px; text-transform:uppercase; margin-bottom:18px; }
+.card-body h3{ font-size:23px; font-weight:800; margin-bottom:12px; }
+.info{ color:var(--texto); font-size:13px; line-height:1.8; margin-bottom:18px; }
+.precio{ font-size:28px; font-weight:900; margin-bottom:22px; }
+
+.btns{ display:flex; gap:12px; }
+.btn{ flex:1; height:48px; border:none; cursor:pointer; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; transition:.3s; display:flex; justify-content:center; align-items:center;}
+.btn-rojo{ background:var(--rojo); color:#fff; }
+.btn-rojo:hover{ background:#a50e1a; }
+.btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.2); color:#fff; }
+.card:hover .btn-outline{ border-color:var(--rojo); color:var(--rojo); }
+
+/* VISTA DETALLE DINAMICA */
+#vista-detalle-dinamica { display: none; padding-bottom: 80px; }
+
+.arch-hero { width: 100%; height: 75vh; min-height: 500px; margin-top: 90px; position: relative; overflow: hidden; background-color: var(--negro); }
+.arch-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
+
+.arch-btn-volver { position: absolute; top: 20px; left: 5%; z-index: 10; background: rgba(13, 13, 13, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: .3s; }
+.arch-btn-volver:hover { border-color: var(--rojo); color: var(--rojo); }
+
+.arch-mid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; max-width: 1300px; margin: 80px auto; padding: 0 5%; align-items: center; }
+.arch-text h2 { font-size: 28px; font-weight: 800; margin-bottom: 24px; color: var(--blanco); text-transform: uppercase; letter-spacing: 1px; }
+.arch-text h2 span { color: var(--rojo); }
+.arch-text p { color: var(--texto); line-height: 1.9; font-size: 14px; white-space: pre-wrap; font-weight: 300; }
+.arch-plan { width: 100%; }
+.arch-plan img { width: 100%; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+
+.arch-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1300px; margin: 0 auto; padding: 0 5%; }
+.arch-gallery img { width: 100%; height: 350px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+
+.barra-contacto { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--gris-claro); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); border-top: 1px solid var(--rojo); }
+.barra-contacto p { font-size: 14px; font-weight: 600; }
+.botones-accion { display: flex; gap: 15px; }
+.btn-accion { padding: 12px 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer; border-radius: 2px; transition: 0.3s; color:#fff; text-decoration:none; display:inline-block;}
+.btn-wsp { background: #25D366; } .btn-wsp:hover { background: #1ebd57; }
+.btn-agendar { background: var(--rojo); } .btn-agendar:hover { background: #a50e1a; }
+
+footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.3); font-size:12px; }
+
+@media(max-width: 1000px) {
+  .grid{ grid-template-columns:repeat(2,1fr); }
+  .filtro-box{ grid-template-columns:1fr 1fr; }
 }
 
-.hero-content h1{
-  font-size:clamp(42px,7vw,80px);
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:2px;
-  margin-bottom:18px;
+@media(max-width: 900px) {
+  .arch-mid { grid-template-columns: 1fr; gap: 40px; margin: 50px auto; }
+  .arch-gallery { grid-template-columns: 1fr; }
 }
 
-.hero-content h1 span{
-  color:var(--rojo);
+@media(max-width:768px){ 
+  nav{ display:none; } 
+  .grid{ grid-template-columns:1fr; } 
+  .filtro-box{ grid-template-columns:1fr; } 
+  .barra-contacto { flex-direction: column; gap: 15px; text-align: center; } 
+  .botones-accion { width: 100%; } 
+  .btn-accion { flex: 1; text-align: center; } 
 }
-
-.hero-content p{
-  color:var(--texto);
-  font-size:15px;
-  max-width:600px;
-  margin:auto;
-  line-height:1.8;
-}
-
-/* FILTROS */
-
-.filtros{
-  padding:50px 5%;
-  background:#111;
-  border-top:1px solid rgba(255,255,255,0.05);
-  border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-.filtro-box{
-  max-width:1200px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-.filtro-box select,
-.filtro-box input{
-  background:#1a1a1a;
-  border:1px solid rgba(255,255,255,0.08);
-  height:55px;
-  padding:0 16px;
-  color:#fff;
-  outline:none;
-  border-radius:4px;
-  font-size:13px;
-}
-
-.buscar-btn{
-  background:var(--rojo);
-  border:none;
-  color:#fff;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  border-radius:4px;
-  cursor:pointer;
-  transition:.3s;
-}
-
-.buscar-btn:hover{
-  background:#a50e1a;
-}
-
-/* GRID */
-
-.propiedades{
-  padding:80px 5%;
-}
-
-.grid{
-  max-width:1300px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:28px;
-}
-
-/* CARD */
-
-.card{
-  background:var(--gris);
-  overflow:hidden;
-  transition:.35s;
-  border:1px solid rgba(255,255,255,0.05);
-}
-
-.card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(193,18,31,0.4);
-}
-
-.card-img{
-  height:280px;
-  overflow:hidden;
-}
-
-.card-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:.5s;
-}
-
-.card:hover .card-img img{
-  transform:scale(1.05);
-}
-
-.card-body{
-  padding:24px;
-}
-
-.tag{
-  display:inline-block;
-  background:rgba(193,18,31,0.1);
-  border:1px solid rgba(193,18,31,0.4);
-  color:var(--rojo);
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:2px;
-  padding:8px 14px;
-  text-transform:uppercase;
-  margin-bottom:18px;
-}
-
-.card-body h3{
-  font-size:23px;
-  font-weight:800;
-  margin-bottom:12px;
-}
-
-.info{
-  color:var(--texto);
-  font-size:13px;
-  line-height:1.8;
-  margin-bottom:18px;
-}
-
-.precio{
-  font-size:28px;
-  font-weight:900;
-  margin-bottom:22px;
-}
-
-.btns{
-  display:flex;
-  gap:12px;
-}
-
-.btn{
-  flex:1;
-  height:48px;
-  border:none;
-  cursor:pointer;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  transition:.3s;
-}
-
-.btn-rojo{
-  background:var(--rojo);
-  color:#fff;
-}
-
-.btn-rojo:hover{
-  background:#a50e1a;
-}
-
-.btn-outline{
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.2);
-  color:#fff;
-}
-
-.btn-outline:hover{
-  border-color:var(--rojo);
-  color:var(--rojo);
-}
-
-/* FOOTER */
-
-footer{
-  padding:45px 5%;
-  text-align:center;
-  border-top:1px solid rgba(255,255,255,0.05);
-  color:rgba(255,255,255,0.3);
-  font-size:12px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1000px){
-
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .filtro-box{
-    grid-template-columns:1fr 1fr;
-  }
-
-}
-
-@media(max-width:768px){
-
-  nav{
-    display:none;
-  }
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .filtro-box{
-    grid-template-columns:1fr;
-  }
-
-}
-
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 </head>
 
 <body>
 
 <header>
-
-  <a href="index.html" class="logo">
-    <img src="logoinmo.png" alt="Mazoud Propiedades">
-  </a>
-
+  <a href="index.html" class="logo"><img src="logoinmo.png" alt="Mazoud Propiedades"></a>
   <nav>
     <a href="index.html">Inicio</a>
-    <a href="#">Departamentos</a>
+    <a class="activo" onclick="cerrarDetalleArquitectura()">Departamentos</a>
     <a href="casas.html">Casas</a>
     <a href="locales.html">Locales</a>
-    <a href="articulos.html">Articulos</a>
+    <a href="articulos.html">Artículos</a>
     <a href="tasaciones.html">Tasaciones</a>
     <a href="contacto.html">Contacto</a>
   </nav>
-
 </header>
 
-<!-- HERO -->
+<div id="vista-listado">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Departamentos</h1>
+      <p>Encontrá departamentos en venta y alquiler en las mejores zonas de Buenos Aires.</p>
+    </div>
+  </section>
 
-<section class="hero">
+  <section class="filtros">
+    <div class="filtro-box">
+      <select><option>Operación</option><option>Venta</option><option>Alquiler</option></select>
+      <select><option>Zona</option><option>Merlo</option><option>Morón</option><option>Castelar</option><option>Ituzaingó</option></select>
+      <input type="text" placeholder="Precio máximo">
+      <button class="buscar-btn">Buscar</button>
+    </div>
+  </section>
 
-  <div class="hero-content">
+ <section class="propiedades">
+  <div class="grid" id="contenedor-propiedades"></div>
+ </section>
+    
+  <footer id="contacto">© 2026 Mazoud Propiedades — Todos los derechos reservados.</footer>
+</div>
 
-    <h1>Departamentos<br></h1>
+<div id="vista-detalle-dinamica"></div>
 
-    <p>
-      Encontrá departamentos en venta y alquiler
-      en las mejores zonas de Buenos Aires.
-    </p>
+<script>
+let propiedadesCargadas = {};
 
-  </div>
+document.addEventListener('DOMContentLoaded', () => {
+  // Acá es donde le decimos que SOLO traiga los Departamentos
+  cargarPropiedadesPublicas('Departamento'); 
+});
 
-</section>
+async function cargarPropiedadesPublicas(tipoFiltro) {
+  const contenedor = document.getElementById('contenedor-propiedades');
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Cargando propiedades...</p>';
 
-<!-- FILTROS -->
+  try {
+    const snapshot = await db.collection('propiedades').where('tipo', '==', tipoFiltro).get();
 
-<section class="filtros">
+    if (snapshot.empty) {
+      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
+      return;
+    }
 
-  <div class="filtro-box">
+    contenedor.innerHTML = ''; 
+    propiedadesCargadas = {}; 
 
-    <select>
-      <option>Operación</option>
-      <option>Venta</option>
-      <option>Alquiler</option>
-    </select>
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      propiedadesCargadas[doc.id] = p; 
+      
+      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+      const precioFormateado = Number(p.precio).toLocaleString('es-AR');
+      
+      let detalles = `📍 ${p.zona}<br>`;
+      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
+      if (p.dormitorios) detalles += `🛏 ${p.dormitorios} dormitorios<br>`;
+      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+      if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
 
-    <select>
-      <option>Zona</option>
-      <option>Merlo</option>
-      <option>Morón</option>
-      <option>Castelar</option>
-      <option>Ituzaingó</option>
-    </select>
+      const mensajeWsp = encodeURIComponent(`Hola, me interesa el departamento "${p.titulo}" que vi en la web.`);
 
-    <input type="text" placeholder="Precio máximo">
-
-    <button class="buscar-btn">
-      Buscar
-    </button>
-
-  </div>
-
-</section>
-
-<!-- PROPIEDADES -->
-
-<section class="propiedades">
-
-  <div class="grid">
-
-    <!-- CARD -->
-
-    <div class="card">
-
-      <div class="card-img">
-        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop">
-      </div>
-
-      <div class="card-body">
-
-        <div class="tag">Venta</div>
-
-        <h3>Departamento 3 Ambientes</h3>
-
-        <div class="info">
-          📍 Castelar Norte<br>
-          🛏 2 dormitorios<br>
-          🚗 Cochera<br>
-          📐 85 m²
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'card';
+      tarjeta.innerHTML = `
+        <div class="card-img"><img src="${foto}" alt="${p.titulo}"></div>
+        <div class="card-body">
+          <div class="tag">${p.operacion}</div>
+          <h3>${p.titulo}</h3>
+          <div class="info">${detalles}</div>
+          <div class="precio">${p.moneda} ${precioFormateado}</div>
+          <div class="btns">
+            <button class="btn btn-rojo" onclick="window.open('https://wa.me/5491122947971?text=${mensajeWsp}', '_blank'); event.stopPropagation();">Consultar</button>
+            <button class="btn btn-outline" onclick="mostrarDetalleArquitectura('${doc.id}')">Ver más</button>
+          </div>
         </div>
+      `;
+      contenedor.appendChild(tarjeta);
+    });
 
-        <div class="precio">
-          USD 125.000
-        </div>
+  } catch (error) {
+    console.error("Error al cargar Firebase:", error);
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error al cargar los departamentos.</p>';
+  }
+}
 
-        <div class="btns">
-          <button class="btn btn-rojo">
-            Consultar
-          </button>
+function mostrarDetalleArquitectura(id) {
+  const p = propiedadesCargadas[id];
+  if (!p) return;
 
-          <button class="btn btn-outline">
-            Ver más
-          </button>
-        </div>
+  document.getElementById('vista-listado').style.display = 'none';
+  const detalleDiv = document.getElementById('vista-detalle-dinamica');
+  detalleDiv.style.display = 'block';
+  
+  window.scrollTo(0, 0);
 
-      </div>
-
+  const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+  
+  let htmlDetalle = `
+    <div class="arch-hero">
+      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+      <img src="${fHero}" alt="${p.titulo}">
     </div>
 
-    <!-- CARD -->
-
-    <div class="card">
-
-      <div class="card-img">
-        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1200&auto=format&fit=crop">
+    <div class="arch-mid">
+      <div class="arch-text">
+        <h2>${p.titulo} <br><span style="color:#C1121F;">${p.moneda} ${Number(p.precio).toLocaleString('es-AR')}</span></h2>
+        <p>${p.descripcion || 'Sin descripción detallada.'}</p>
+        <br>
+        <p style="font-weight: 600;">Ubicación: <span style="color:#C1121F;">${p.zona}</span></p>
       </div>
+  `;
 
-      <div class="card-body">
-
-        <div class="tag">Alquiler</div>
-
-        <h3>Monoambiente Moderno</h3>
-
-        <div class="info">
-          📍 Ituzaingó<br>
-          🛏 1 ambiente<br>
-          🚿 Baño completo<br>
-          📐 38 m²
-        </div>
-
-        <div class="precio">
-          $480.000
-        </div>
-
-        <div class="btns">
-          <button class="btn btn-rojo">
-            Consultar
-          </button>
-
-          <button class="btn btn-outline">
-            Ver más
-          </button>
-        </div>
-
+  if (p.plano) {
+    htmlDetalle += `
+      <div class="arch-plan">
+        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
       </div>
+    `;
+  } else {
+    htmlDetalle += `<div></div>`;
+  }
+  
+  htmlDetalle += `</div>`; 
 
+  if (p.fotos && p.fotos.length > 1) {
+    htmlDetalle += `<div class="arch-gallery">`;
+    for (let i = 1; i < p.fotos.length; i++) {
+      htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
+    }
+    htmlDetalle += `</div>`;
+  }
+
+  if (p.mapa) {
+    htmlDetalle += `
+      <div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;">
+        <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: #FFF;">Ubicación en el Mapa</h3>
+    `;
+    if(p.mapa.includes('<iframe')) {
+      htmlDetalle += `<div class="mapa-container" style="width:100%; border-radius:8px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);">${p.mapa}</div>`;
+    } else {
+      htmlDetalle += `<a href="${p.mapa}" target="_blank" class="btn-accion" style="background:transparent; border:2px solid #C1121F; color:#C1121F; display:inline-block; padding: 15px 30px;">Abrir Google Maps</a>`;
+    }
+    htmlDetalle += `</div>`;
+  }
+
+  const mensajeWsp = encodeURIComponent(`Hola, me interesa el departamento "${p.titulo}".`);
+  htmlDetalle += `
+    <div class="barra-contacto">
+      <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+      <div class="botones-accion">
+        <a href="https://wa.me/5491122947971?text=${mensajeWsp}" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
+      </div>
     </div>
+  `;
 
-    <!-- CARD -->
+  detalleDiv.innerHTML = htmlDetalle;
+  
+  const iframeMapa = detalleDiv.querySelector('.mapa-container iframe');
+  if(iframeMapa) {
+    iframeMapa.style.width = '100%';
+    iframeMapa.style.height = '450px';
+    iframeMapa.style.border = 'none';
+  }
+}
 
-    <div class="card">
-
-      <div class="card-img">
-        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?q=80&w=1200&auto=format&fit=crop">
-      </div>
-
-      <div class="card-body">
-
-        <div class="tag">Venta</div>
-
-        <h3>Departamento de Categoría</h3>
-
-        <div class="info">
-          📍 Morón Centro<br>
-          🛏 3 dormitorios<br>
-          🏊 Amenities<br>
-          📐 120 m²
-        </div>
-
-        <div class="precio">
-          USD 210.000
-        </div>
-
-        <div class="btns">
-          <button class="btn btn-rojo">
-            Consultar
-          </button>
-
-          <button class="btn btn-outline">
-            Ver más
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-<footer id="contacto">
-
-  © 2025 Mazoud Propiedades — Todos los derechos reservados.
-
-</footer>
-
+function cerrarDetalleArquitectura() {
+  document.getElementById('vista-detalle-dinamica').style.display = 'none';
+  document.getElementById('vista-listado').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 </body>
 </html>
