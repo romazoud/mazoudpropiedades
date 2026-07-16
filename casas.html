@@ -25,12 +25,12 @@ body{ font-family:'Montserrat',sans-serif; background:var(--negro); color:var(--
 a{ text-decoration:none; color:inherit; }
 
   /* HEADER */
-  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-oscuro); backdrop-filter: blur(10px); }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background-color: rgba(13, 13, 13, 0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gris-claro); backdrop-filter: blur(10px); }
   .logo img { height: 55px; object-fit: contain; }
   nav { display: flex; gap: 35px; }
   nav a { color: var(--blanco); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transicion); position: relative; cursor: pointer; }
-  nav a.activo { color: var(--rojo-intenso); }
-  nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo-intenso); transition: var(--transicion); }
+  nav a.activo { color: var(--rojo); }
+  nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--rojo); transition: var(--transicion); }
   nav a:hover::after, nav a.activo::after { width: 100%; }
 
 /* VISTA LISTADO */
@@ -68,8 +68,10 @@ a{ text-decoration:none; color:inherit; }
 /* VISTA DETALLE DINAMICA */
 #vista-detalle-dinamica { display: none; padding-bottom: 80px; }
 
-.arch-hero { width: 100%; height: 60vh; min-height: 400px; margin-top: 90px; position: relative; }
-.arch-hero img { width: 100%; height: 100%; object-fit: cover; }
+/* Acá está el arreglo de la foto principal */
+.arch-hero { width: 100%; height: 60vh; min-height: 400px; margin-top: 90px; position: relative; background-color: var(--negro); display: flex; align-items: center; justify-content: center; }
+.arch-hero img { width: 100%; height: 100%; object-fit: contain; }
+
 .arch-btn-volver { position: absolute; top: 20px; left: 5%; z-index: 10; background: rgba(13, 13, 13, 0.8); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: .3s; }
 .arch-btn-volver:hover { border-color: var(--rojo); color: var(--rojo); }
 
@@ -213,9 +215,13 @@ function mostrarDetalleArquitectura(id) {
   const p = propiedadesCargadas[id];
   if (!p) return;
 
+  // Escondemos la lista y mostramos el detalle
   document.getElementById('vista-listado').style.display = 'none';
   const detalleDiv = document.getElementById('vista-detalle-dinamica');
   detalleDiv.style.display = 'block';
+  
+  // ¡Este es el arreglo para la pantalla negra! Obliga al navegador a subir a ver la casa
+  window.scrollTo(0, 0);
 
   const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
   
@@ -236,10 +242,11 @@ function mostrarDetalleArquitectura(id) {
       </div>
   `;
 
-  if (p.fotos && p.fotos.length > 1) {
+  // ¡Acá está el arreglo del plano! Ahora usa p.plano en lugar de fotos[1]
+  if (p.plano) {
     htmlDetalle += `
       <div class="arch-plan">
-        <img src="${p.fotos[1]}" alt="Plano o vista secundaria">
+        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
       </div>
     `;
   } else {
@@ -248,9 +255,10 @@ function mostrarDetalleArquitectura(id) {
   
   htmlDetalle += `</div>`; 
 
-  if (p.fotos && p.fotos.length > 2) {
+  // Galería infinita (ahora acomoda solitas hasta 10 fotos o las que le subas)
+  if (p.fotos && p.fotos.length > 1) {
     htmlDetalle += `<div class="arch-gallery">`;
-    for (let i = 2; i < p.fotos.length; i++) {
+    for (let i = 1; i < p.fotos.length; i++) {
       htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
     }
     htmlDetalle += `</div>`;
