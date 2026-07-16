@@ -394,35 +394,13 @@ async function guardarPropiedad() {
     antiguedad: Number(document.getElementById('f-antiguedad').value) || null,
     cochera: document.getElementById('f-cochera').checked,
     descripcion: document.getElementById('f-descripcion').value.trim(),
-    video: document.getElementById('f-video').value.trim(),
-mapa: document.getElementById('f-mapa').value.trim(),
 
-expensas: Number(document.getElementById('f-expensas').value) || null,
-piso: Number(document.getElementById('f-piso').value) || null,
+    mapa: document.getElementById('f-mapa').value.trim(),
+    destacada: document.getElementById('f-destacada').checked,
 
-orientacion: document.getElementById('f-orientacion').value,
-estado: document.getElementById('f-estado').value,
-asesor: document.getElementById('f-asesor').value,
-
-destacada: document.getElementById('f-destacada').checked,
-
-amenities: {
-    balcon: document.getElementById('f-balcon').checked,
-    patio: document.getElementById('f-patio').checked,
-    terraza: document.getElementById('f-terraza').checked,
-    jardin: document.getElementById('f-jardin').checked,
-    parrilla: document.getElementById('f-parrilla').checked,
-    piscina: document.getElementById('f-piscina').checked,
-    sum: document.getElementById('f-sum').checked,
-    gimnasio: document.getElementById('f-gimnasio').checked,
-    laundry: document.getElementById('f-laundry').checked,
-    seguridad: document.getElementById('f-seguridad').checked,
-    aire: document.getElementById('f-aire').checked,
-    aptoCredito: document.getElementById('f-apto').checked
-},
     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     cargadoPor: auth.currentUser.email
-  };
+};
 
   try {
     let docId = editId;
