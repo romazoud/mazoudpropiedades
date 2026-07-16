@@ -154,36 +154,45 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 let propiedadesCargadas = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-  cargarPropiedadesPublicas('Casa / PH'); 
+  // 1. Leemos si viene una zona específica desde el buscador del inicio
+  const parametros = new URLSearchParams(window.location.search);
+  const zonaBuscada = parametros.get('zona');
+
+  // 2. Le pasamos esa zona a la función que carga las propiedades
+  // IMPORTANTE: Cambiá 'Departamento' por 'Casa' o 'Local' según en qué archivo estés
+  cargarPropiedadesPublicas('Departamento', zonaBuscada); 
 });
 
-async function cargarPropiedadesPublicas(tipoFiltro) {
+// Agregamos la zonaFiltro como segundo parámetro
+async function cargarPropiedadesPublicas(tipoFiltro, zonaFiltro = null) {
   const contenedor = document.getElementById('contenedor-propiedades');
   contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Cargando propiedades...</p>';
 
   try {
     const snapshot = await db.collection('propiedades').where('tipo', '==', tipoFiltro).get();
 
-    if (snapshot.empty) {
-      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
-      return;
-    }
-
     contenedor.innerHTML = ''; 
     propiedadesCargadas = {}; 
+    let cantidadMostradas = 0; // Contador para saber si hay resultados tras el filtro
 
     snapshot.forEach(doc => {
       const p = doc.data();
+      
+      // MAGIA DEL FILTRO: Si el usuario buscó una zona, y esta propiedad no es de esa zona, la salteamos.
+      if (zonaFiltro && p.zona !== zonaFiltro) {
+          return; 
+      }
+
+      cantidadMostradas++;
       propiedadesCargadas[doc.id] = p; 
       
       const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
       const precioFormateado = Number(p.precio).toLocaleString('es-AR');
       
       let detalles = `📍 ${p.zona}<br>`;
-      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
-      if (p.dormitorios) detalles += `🛏 ${p.dormitorios} dormitorios<br>`;
-      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
       if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
+      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
 
       const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
 
@@ -204,6 +213,11 @@ async function cargarPropiedadesPublicas(tipoFiltro) {
       `;
       contenedor.appendChild(tarjeta);
     });
+
+    // Si después de filtrar no quedó ninguna, avisamos.
+    if (cantidadMostradas === 0) {
+        contenedor.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría para la zona de ${zonaFiltro || ''}.</p>`;
+    }
 
   } catch (error) {
     console.error("Error al cargar Firebase:", error);
