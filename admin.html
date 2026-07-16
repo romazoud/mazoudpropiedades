@@ -364,26 +364,40 @@ async function guardarPropiedad() {
   try {
     let docId = editId;
     let urlsFotosNuevas = [];
+    let urlPlanoNuevo = null;
 
+    const cloudName = 'mazoud-propiedades'; 
+    const uploadPreset = 'mazoud-propiedades'; 
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    // 1. Subir fotos múltiples a Cloudinary
     if (archivosSeleccionados.length > 0) {
-      const cloudName = 'dlmisrlfo'; 
-      const uploadPreset = 'mazoud-propiedades'; 
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
       for (const file of archivosSeleccionados) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', uploadPreset);
-
         const response = await fetch(cloudinaryUrl, { method: 'POST', body: formData });
         const data = await response.json();
         if (data.secure_url) urlsFotosNuevas.push(data.secure_url);
       }
     }
 
+    // 2. Subir el PLANO a Cloudinary (¡Esta es la parte nueva!)
+    const inputPlano = document.getElementById('f-plano');
+    if (inputPlano.files.length > 0) {
+      const formDataPlano = new FormData();
+      formDataPlano.append('file', inputPlano.files[0]);
+      formDataPlano.append('upload_preset', uploadPreset);
+      const responsePlano = await fetch(cloudinaryUrl, { method: 'POST', body: formDataPlano });
+      const dataPlano = await responsePlano.json();
+      if (dataPlano.secure_url) urlPlanoNuevo = dataPlano.secure_url;
+    }
+
+    // 3. Guardar en Firestore
     if (!docId) {
       datos.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
       datos.fotos = urlsFotosNuevas; 
+      if (urlPlanoNuevo) datos.plano = urlPlanoNuevo; // Guarda el plano independiente
       const nuevoDoc = await db.collection('propiedades').add(datos);
       docId = nuevoDoc.id;
     } else {
@@ -391,6 +405,7 @@ async function guardarPropiedad() {
       const docSnap = await docRef.get();
       const fotosExistentes = docSnap.data().fotos || [];
       datos.fotos = fotosExistentes.concat(urlsFotosNuevas);
+      if (urlPlanoNuevo) datos.plano = urlPlanoNuevo;
       await docRef.update(datos);
     }
 
@@ -408,7 +423,6 @@ async function guardarPropiedad() {
     btn.textContent = editId ? 'Guardar cambios' : 'Publicar propiedad';
   }
 }
-
 function cargarPropiedades() {
   db.collection('propiedades').orderBy('creadoEn', 'desc').onSnapshot(snapshot => {
     const cont = document.getElementById('lista-propiedades');
