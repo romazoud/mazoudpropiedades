@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- Firebase SDK (compat, no requiere build tools) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -82,12 +82,13 @@
   .check-row input { width:auto; }
   .check-row label { margin:0; font-size:12px; color:var(--texto-muted); text-transform:none; letter-spacing:0; font-weight:500; }
 
-  #fotos-preview { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-  #fotos-preview img { width:64px; height:64px; object-fit:cover; border-radius:4px; border:1px solid var(--border); }
-
   #form-msg { font-size:12px; margin-top:14px; text-align:center; min-height:16px; }
   #form-msg.ok { color:#5bd17a; }
   #form-msg.err { color:var(--rojo); }
+
+  /* ---- SECCIÓN FOTOS ---- */
+  .seccion-fotos { border: 1px dashed rgba(255,255,255,0.2); padding: 20px; border-radius: 4px; margin-bottom: 20px; background: rgba(0,0,0,0.2); }
+  .seccion-fotos h4 { font-size: 11px; color: var(--rojo); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
 
   /* ---- LISTADO ---- */
   .prop-item {
@@ -193,7 +194,7 @@
       </div>
 
       <div class="fg">
-        <label>Dirección (opcional, no se muestra públicamente si preferís)</label>
+        <label>Dirección (opcional)</label>
         <input type="text" id="f-direccion" placeholder="Ej: Av. Santa Fe 1234">
       </div>
 
@@ -240,10 +241,34 @@
         <textarea id="f-descripcion" placeholder="Detalles, amenities, estado general, etc."></textarea>
       </div>
 
-      <div class="fg">
-        <label>Fotos (podés seleccionar varias)</label>
-        <input type="file" id="f-fotos" accept="image/*" multiple>
-        <div id="fotos-preview"></div>
+      <!-- NUEVO SISTEMA DE FOTOS SEPARADAS -->
+      <div class="seccion-fotos">
+        <h4>Diseño Arquitectónico (Elegí dónde va cada foto)</h4>
+        
+        <div class="fg">
+          <label>1. FOTO PRINCIPAL (Aparece gigante arriba de todo)</label>
+          <input type="file" id="f-foto-0" accept="image/*">
+        </div>
+        
+        <div class="fg">
+          <label>2. PLANO O FOTO DERECHA (Al lado del texto)</label>
+          <input type="file" id="f-foto-1" accept="image/*">
+        </div>
+        
+        <div class="grid2">
+          <div class="fg">
+            <label>3. FOTO ABAJO 1</label>
+            <input type="file" id="f-foto-2" accept="image/*">
+          </div>
+          <div class="fg">
+            <label>4. FOTO ABAJO 2</label>
+            <input type="file" id="f-foto-3" accept="image/*">
+          </div>
+          <div class="fg">
+            <label>5. FOTO ABAJO 3</label>
+            <input type="file" id="f-foto-4" accept="image/*">
+          </div>
+        </div>
       </div>
 
       <button class="btn-red" id="btn-guardar" onclick="guardarPropiedad()">Publicar propiedad</button>
@@ -299,37 +324,16 @@ function cerrarSesion() {
 }
 
 /* ============================================================
-   FOTOS - preview antes de subir
-   ============================================================ */
-let archivosSeleccionados = [];
-
-document.getElementById('f-fotos').addEventListener('change', function(e) {
-  archivosSeleccionados = Array.from(e.target.files);
-  const preview = document.getElementById('fotos-preview');
-  preview.innerHTML = '';
-  archivosSeleccionados.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      preview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-});
-
-/* ============================================================
    GUARDAR / EDITAR PROPIEDAD
    ============================================================ */
 function limpiarFormulario() {
   ['f-titulo','f-precio','f-zona','f-direccion','f-ambientes','f-dormitorios',
-   'f-banos','f-m2cub','f-m2tot','f-antiguedad','f-descripcion'].forEach(id => {
-    document.getElementById(id).value = '';
+   'f-banos','f-m2cub','f-m2tot','f-antiguedad','f-descripcion',
+   'f-foto-0','f-foto-1','f-foto-2','f-foto-3','f-foto-4'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
   });
   document.getElementById('f-cochera').checked = false;
-  document.getElementById('f-fotos').value = '';
-  document.getElementById('fotos-preview').innerHTML = '';
-  archivosSeleccionados = [];
   document.getElementById('edit-id').value = '';
   document.getElementById('form-title').textContent = 'Cargar nueva propiedad';
   document.getElementById('btn-guardar').textContent = 'Publicar propiedad';
@@ -382,44 +386,54 @@ async function guardarPropiedad() {
 
   try {
     let docId = editId;
-    let urlsFotosNuevas = [];
+    let fotosExistentes = ["", "", "", "", ""];
 
-    // 1. SUBIR FOTOS A CLOUDINARY PRIMERO
-    if (archivosSeleccionados.length > 0) {
-      const cloudName = 'TU_CLOUD_NAME'; // <--- ACÁ PONÉS TU CLOUD NAME (Ej: 'mazoud123')
-      const uploadPreset = 'mazoud-propiedades'; // <--- ACÁ PONÉS TU PRESET (Ej: 'mazoud-propiedades')
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
-      for (const file of archivosSeleccionados) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', uploadPreset);
-
-        const response = await fetch(cloudinaryUrl, {
-          method: 'POST',
-          body: formData
-        });
-        
-        const data = await response.json();
-        if (data.secure_url) {
-          urlsFotosNuevas.push(data.secure_url);
+    // Si estamos editando, traemos las fotos viejas por si dejó un casillero vacío
+    if (docId) {
+      const docSnap = await db.collection('propiedades').doc(docId).get();
+      const datosViejos = docSnap.data();
+      if (datosViejos.fotos) {
+        for(let i=0; i<5; i++) {
+          fotosExistentes[i] = datosViejos.fotos[i] || "";
         }
       }
     }
 
-    // 2. GUARDAR DATOS EN FIRESTORE
+    // Función para subir a Cloudinary
+    const cloudName = 'mazoud-propiedades'; 
+    const uploadPreset = 'mazoud-propiedades'; 
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    async function subirUnicaFoto(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+      const response = await fetch(cloudinaryUrl, { method: 'POST', body: formData });
+      const data = await response.json();
+      return data.secure_url;
+    }
+
+    // Revisamos cada una de las 5 cajitas
+    for (let i = 0; i < 5; i++) {
+      const fileInput = document.getElementById(`f-foto-${i}`);
+      if (fileInput && fileInput.files.length > 0) {
+        // Si subió foto nueva, la pisamos en ese lugar exacto
+        fotosExistentes[i] = await subirUnicaFoto(fileInput.files[0]);
+      }
+    }
+
+    // Fallbacks (Por si deja la 1 o la 2 vacías al publicar por primera vez)
+    if (!fotosExistentes[0]) fotosExistentes[0] = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200";
+    if (!fotosExistentes[1]) fotosExistentes[1] = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200";
+
+    datos.fotos = fotosExistentes;
+
+    // Guardamos en Firebase
     if (!docId) {
       datos.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
-      datos.fotos = urlsFotosNuevas; // Guardamos los links de Cloudinary
-      const nuevoDoc = await db.collection('propiedades').add(datos);
-      docId = nuevoDoc.id;
+      await db.collection('propiedades').add(datos);
     } else {
-      // Si es edición, agregamos las fotos nuevas a las existentes
-      const docRef = db.collection('propiedades').doc(docId);
-      const docSnap = await docRef.get();
-      const fotosExistentes = docSnap.data().fotos || [];
-      datos.fotos = fotosExistentes.concat(urlsFotosNuevas);
-      await docRef.update(datos);
+      await db.collection('propiedades').doc(docId).update(datos);
     }
 
     msg.className = 'ok';
@@ -496,8 +510,14 @@ async function editarPropiedad(id) {
   document.getElementById('f-antiguedad').value = p.antiguedad || '';
   document.getElementById('f-cochera').checked = !!p.cochera;
   document.getElementById('f-descripcion').value = p.descripcion || '';
+  
+  // Limpiamos los inputs de archivos (si no suben nada, se conservan las viejas)
+  for(let i=0; i<5; i++) {
+    const el = document.getElementById(`f-foto-${i}`);
+    if(el) el.value = '';
+  }
 
-  document.getElementById('form-title').textContent = 'Editando propiedad';
+  document.getElementById('form-title').textContent = 'Editando propiedad (Dejá las fotos vacías para no cambiarlas)';
   document.getElementById('btn-guardar').textContent = 'Guardar cambios';
   document.getElementById('btn-cancelar-edicion').style.display = 'block';
 
