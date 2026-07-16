@@ -401,7 +401,6 @@ async function guardarPropiedad() {
     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     cargadoPor: auth.currentUser.email
 };
-
   try {
     let docId = editId;
     let urlsFotosNuevas = [];
