@@ -143,14 +143,34 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
     </div>
   </section>
 
-  <section class="filtros">
-    <div class="filtro-box">
-      <select><option>Operación</option><option>Venta</option><option>Alquiler</option></select>
-      <select><option>Zona</option><option>Merlo</option><option>Morón</option><option>Castelar</option><option>Ituzaingó</option></select>
-      <input type="text" placeholder="Precio máximo">
-      <button class="buscar-btn">Buscar</button>
-    </div>
-  </section>
+  <!-- FILTROS -->
+<section class="filtros">
+  <div class="filtro-box">
+    
+    <select id="filtro-operacion">
+      <option value="">Operación</option>
+      <option value="Venta">Venta</option>
+      <option value="Alquiler">Alquiler</option>
+    </select>
+
+    <select id="filtro-zona">
+      <option value="">Zona</option>
+      <option value="Merlo">Merlo</option>
+      <option value="Morón">Morón</option>
+      <option value="Castelar">Castelar</option>
+      <option value="Ituzaingó">Ituzaingó</option>
+      <option value="Moreno">Moreno</option>
+      <option value="S.A. Padua">S.A. Padua</option>
+    </select>
+
+    <input type="number" id="filtro-precio" placeholder="Precio máximo">
+
+    <button class="buscar-btn" onclick="aplicarFiltrosInternos()">
+      Buscar
+    </button>
+
+  </div>
+</section>
 
  <section class="propiedades">
   <div class="grid" id="contenedor-propiedades"></div>
@@ -162,66 +182,118 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 <div id="vista-detalle-dinamica"></div>
 
 <script>
-let propiedadesCargadas = {};
+let propiedadesCargadas = {}; // Acá guardamos las propiedades en memoria
+let tipoPropiedadActual = ''; // Variable para saber en qué página estamos
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Configurado para traer únicamente los Locales
-  cargarPropiedadesPublicas('Local'); 
+  // ACÁ DEFINÍS LA PÁGINA ('departamento', 'casa' o 'local')
+  tipoPropiedadActual = 'local'; 
+
+  const parametros = new URLSearchParams(window.location.search);
+  const zonaBuscada = parametros.get('zona');
+
+  // Si el usuario viene del buscador del Inicio, autocompletamos el filtro
+  if(zonaBuscada) {
+    const selectZona = document.getElementById('filtro-zona');
+    Array.from(selectZona.options).forEach(opcion => {
+        const txtOpt = opcion.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const txtBus = zonaBuscada.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if(txtOpt === txtBus) selectZona.value = opcion.value;
+    });
+  }
+
+  cargarYFiltrarPropiedades(); 
 });
 
-async function cargarPropiedadesPublicas(tipoFiltro) {
+async function cargarYFiltrarPropiedades() {
   const contenedor = document.getElementById('contenedor-propiedades');
-  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Cargando propiedades...</p>';
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Buscando propiedades...</p>';
 
   try {
-    const snapshot = await db.collection('propiedades').where('tipo', '==', tipoFiltro).get();
-
-    if (snapshot.empty) {
-      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
-      return;
-    }
-
-    contenedor.innerHTML = ''; 
+    const snapshot = await db.collection('propiedades').get();
     propiedadesCargadas = {}; 
 
+    // Solo guardamos en memoria las que correspondan a esta página
     snapshot.forEach(doc => {
       const p = doc.data();
-      propiedadesCargadas[doc.id] = p; 
-      
-      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
-      const precioFormateado = Number(p.precio).toLocaleString('es-AR');
-      
-      let detalles = `📍 ${p.zona}<br>`;
-      if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
-      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
-      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
-
-      const mensajeWsp = encodeURIComponent(`Hola, me interesa el local/oficina "${p.titulo}" que vi en la web.`);
-
-      const tarjeta = document.createElement('div');
-      tarjeta.className = 'card';
-      tarjeta.innerHTML = `
-        <div class="card-img"><img src="${foto}" alt="${p.titulo}"></div>
-        <div class="card-body">
-          <div class="tag">${p.operacion}</div>
-          <h3>${p.titulo}</h3>
-          <div class="info">${detalles}</div>
-          <div class="precio">${p.moneda} ${precioFormateado}</div>
-          <div class="btns">
-            <button class="btn btn-rojo" onclick="window.open('https://wa.me/5491122947971?text=${mensajeWsp}', '_blank'); event.stopPropagation();">Consultar</button>
-            <button class="btn btn-outline" onclick="mostrarDetalleArquitectura('${doc.id}')">Ver más</button>
-          </div>
-        </div>
-      `;
-      contenedor.appendChild(tarjeta);
+      const tipoPropiedadBase = (p.tipo || '').toLowerCase();
+      if (tipoPropiedadBase.includes(tipoPropiedadActual)) {
+          propiedadesCargadas[doc.id] = p; 
+      }
     });
+
+    // Simulamos un "click" en buscar para que dibuje las tarjetas
+    aplicarFiltrosInternos();
 
   } catch (error) {
     console.error("Error al cargar Firebase:", error);
-    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error al cargar los locales.</p>';
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error de conexión.</p>';
   }
 }
 
+// ESTA ES LA FUNCIÓN QUE SE EJECUTA AL TOCAR EL BOTÓN "BUSCAR"
+function aplicarFiltrosInternos() {
+  const operacionBuscada = document.getElementById('filtro-operacion').value.toLowerCase();
+  const zonaBuscada = document.getElementById('filtro-zona').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const precioMaximo = parseInt(document.getElementById('filtro-precio').value) || 0;
+
+  const contenedor = document.getElementById('contenedor-propiedades');
+  contenedor.innerHTML = ''; 
+  let cantidadMostradas = 0;
+
+  for (const id in propiedadesCargadas) {
+    const p = propiedadesCargadas[id];
+
+    // Filtro 1: Operación (Venta/Alquiler)
+    const operacionBase = (p.operacion || '').toLowerCase();
+    if (operacionBuscada && operacionBuscada !== "" && operacionBase !== operacionBuscada) continue;
+
+    // Filtro 2: Zona
+    const zonaBase = (p.zona || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (zonaBuscada && zonaBuscada !== "" && zonaBase !== zonaBuscada) continue;
+
+    // Filtro 3: Precio Máximo
+    const precioBase = parseInt(p.precio) || 0;
+    if (precioMaximo > 0 && precioBase > precioMaximo) continue;
+
+    // Si pasa los filtros, dibujamos la tarjeta
+    cantidadMostradas++;
+    
+    const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+    const precioFormateado = Number(p.precio).toLocaleString('es-AR');
+    
+    let detalles = `📍 ${p.zona}<br>`;
+    if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
+    if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+    if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
+
+    const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
+
+    const tarjeta = document.createElement('div');
+    tarjeta.className = 'card';
+    tarjeta.innerHTML = `
+      <div class="card-img"><img src="${foto}" alt="${p.titulo}"></div>
+      <div class="card-body">
+        <div class="tag">${p.operacion}</div>
+        <h3>${p.titulo}</h3>
+        <div class="info">${detalles}</div>
+        <div class="precio">${p.moneda} ${precioFormateado}</div>
+        <div class="btns">
+          <button class="btn btn-rojo" onclick="window.open('https://wa.me/5491122947971?text=${mensajeWsp}', '_blank'); event.stopPropagation();">Consultar</button>
+          <button class="btn btn-outline" onclick="mostrarDetalleArquitectura('${id}')">Ver más</button>
+        </div>
+      </div>
+    `;
+    contenedor.appendChild(tarjeta);
+  }
+
+  // Si no quedó ninguna tarjeta, avisamos
+  if (cantidadMostradas === 0) {
+      contenedor.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">No hay propiedades publicadas que coincidan con esta búsqueda.</p>`;
+  }
+}
+
+// FUNCIÓN PARA VER EL DETALLE GIGANTE
 function mostrarDetalleArquitectura(id) {
   const p = propiedadesCargadas[id];
   if (!p) return;
@@ -229,62 +301,40 @@ function mostrarDetalleArquitectura(id) {
   document.getElementById('vista-listado').style.display = 'none';
   const detalleDiv = document.getElementById('vista-detalle-dinamica');
   detalleDiv.style.display = 'block';
-  
   window.scrollTo(0, 0);
 
   const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
-  
   let htmlDetalle = `
     <div class="arch-hero">
-      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()">
-        <i class="fas fa-arrow-left"></i> Volver
-      </button>
+      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()"><i class="fas fa-arrow-left"></i> Volver</button>
       <img src="${fHero}" alt="${p.titulo}">
     </div>
-
     <div class="arch-mid">
       <div class="arch-text">
         <h2>${p.titulo} <br><span style="color:#C1121F;">${p.moneda} ${Number(p.precio).toLocaleString('es-AR')}</span></h2>
-        <p>${p.descripcion || 'Sin descripción detallada.'}</p>
-        <br>
+        <p>${p.descripcion || 'Sin descripción detallada.'}</p><br>
         <p style="font-weight: 600;">Ubicación: <span style="color:#C1121F;">${p.zona}</span></p>
       </div>
   `;
 
-  if (p.plano) {
-    htmlDetalle += `
-      <div class="arch-plan">
-        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
-      </div>
-    `;
-  } else {
-    htmlDetalle += `<div></div>`;
-  }
-  
+  if (p.plano) { htmlDetalle += `<div class="arch-plan"><img src="${p.plano}" style="object-fit: contain;"></div>`; }
+  else { htmlDetalle += `<div></div>`; }
   htmlDetalle += `</div>`; 
 
   if (p.fotos && p.fotos.length > 1) {
     htmlDetalle += `<div class="arch-gallery">`;
-    for (let i = 1; i < p.fotos.length; i++) {
-      htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
-    }
+    for (let i = 1; i < p.fotos.length; i++) { htmlDetalle += `<img src="${p.fotos[i]}">`; }
     htmlDetalle += `</div>`;
   }
 
   if (p.mapa) {
-    htmlDetalle += `
-      <div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;">
-        <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: #FFF;">Ubicación en el Mapa</h3>
-    `;
-    if(p.mapa.includes('<iframe')) {
-      htmlDetalle += `<div class="mapa-container" style="width:100%; border-radius:8px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);">${p.mapa}</div>`;
-    } else {
-      htmlDetalle += `<a href="${p.mapa}" target="_blank" class="btn-accion" style="background:transparent; border:2px solid #C1121F; color:#C1121F; display:inline-block; padding: 15px 30px;">Abrir Google Maps</a>`;
-    }
+    htmlDetalle += `<div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;"><h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: #FFF;">Ubicación en el Mapa</h3>`;
+    if(p.mapa.includes('<iframe')) { htmlDetalle += `<div class="mapa-container" style="width:100%; border-radius:8px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);">${p.mapa}</div>`; } 
+    else { htmlDetalle += `<a href="${p.mapa}" target="_blank" class="btn-accion" style="background:transparent; border:2px solid #C1121F; color:#C1121F; display:inline-block; padding: 15px 30px;">Abrir Google Maps</a>`; }
     htmlDetalle += `</div>`;
   }
 
-  const mensajeWsp = encodeURIComponent(`Hola, me interesa el local/oficina "${p.titulo}".`);
+  const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}".`);
   htmlDetalle += `
     <div class="barra-contacto">
       <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
@@ -294,15 +344,9 @@ function mostrarDetalleArquitectura(id) {
       </div>
     </div>
   `;
-
   detalleDiv.innerHTML = htmlDetalle;
-  
   const iframeMapa = detalleDiv.querySelector('.mapa-container iframe');
-  if(iframeMapa) {
-    iframeMapa.style.width = '100%';
-    iframeMapa.style.height = '450px';
-    iframeMapa.style.border = 'none';
-  }
+  if(iframeMapa) { iframeMapa.style.width = '100%'; iframeMapa.style.height = '450px'; iframeMapa.style.border = 'none'; }
 }
 
 function cerrarDetalleArquitectura() {
