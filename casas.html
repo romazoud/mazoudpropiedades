@@ -1,4 +1,3 @@
-
 <!DOCTYPE html> 
 <html lang="es">
 <head>
@@ -110,6 +109,44 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 /* RESPONSIVE */
 @media(max-width:1000px){ .grid{ grid-template-columns:repeat(2,1fr); } .filtro-box{ grid-template-columns:1fr 1fr; } .contenedor-plano { grid-template-columns: 1fr; gap: 40px; } }
 @media(max-width:768px){ nav{ display:none; } .grid{ grid-template-columns:1fr; } .filtro-box{ grid-template-columns:1fr; } .hero-propiedad h1 { font-size: 28px; } .barra-contacto { flex-direction: column; gap: 15px; text-align: center; } .botones-accion { width: 100%; } .btn-accion { flex: 1; text-align: center; } }
+/* ========================================= */
+/* ESTILO DETALLE ARQUITECTÓNICO (TIPO PLANO)*/
+/* ========================================= */
+#vista-detalle-dinamica { display: none; padding-bottom: 80px; }
+
+.arch-hero {
+  width: 100%; height: 60vh; min-height: 400px;
+  margin-top: 90px; position: relative;
+}
+.arch-hero img { width: 100%; height: 100%; object-fit: cover; }
+.arch-btn-volver {
+  position: absolute; top: 20px; left: 5%; z-index: 10;
+  background: rgba(13, 13, 13, 0.8); color: #fff; border: 1px solid var(--border);
+  padding: 10px 20px; border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: .3s;
+}
+.arch-btn-volver:hover { border-color: var(--rojo); color: var(--rojo); }
+
+.arch-mid {
+  display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px;
+  max-width: 1300px; margin: 80px auto; padding: 0 5%; align-items: center;
+}
+.arch-text h2 { font-size: 28px; font-weight: 800; margin-bottom: 24px; color: var(--blanco); text-transform: uppercase; letter-spacing: 1px; }
+.arch-text h2 span { color: var(--rojo); }
+.arch-text p { color: var(--texto); line-height: 1.9; font-size: 14px; white-space: pre-wrap; font-weight: 300; }
+.arch-plan { width: 100%; }
+.arch-plan img { width: 100%; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+
+.arch-gallery {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  max-width: 1300px; margin: 0 auto; padding: 0 5%;
+}
+.arch-gallery img { width: 100%; height: 350px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+
+@media(max-width: 900px) {
+  .arch-mid { grid-template-columns: 1fr; gap: 40px; margin: 50px auto; }
+  .arch-gallery { grid-template-columns: 1fr; }
+}
 </style>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -155,6 +192,8 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
   <div class="grid" id="contenedor-propiedades">
       
   </div>
+  <!-- Contenedor donde se va a dibujar el detalle arquitectónico -->
+<div id="vista-detalle-dinamica"></div>
 </section>
     
   <footer id="contacto">© 2026 Mazoud Propiedades — Todos los derechos reservados.</footer>
@@ -274,23 +313,153 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 </div>
 
 <script>
-  function abrirPropiedad(idPropiedad) {
-      // Oculta el listado
-      document.getElementById('vista-listado').style.display = 'none';
-      // Muestra la propiedad solicitada
-      document.getElementById(idPropiedad).style.display = 'block';
-      // Sube la pantalla arriba de todo
-      window.scrollTo(0, 0);
+// Usamos esta variable global para guardar los datos temporalmente
+let propiedadesCargadas = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // ATENCIÓN: Cambiar 'Casa / PH' por 'Departamento' o 'Local' según la página
+  cargarPropiedadesPublicas('Casa / PH'); 
+});
+
+async function cargarPropiedadesPublicas(tipoFiltro) {
+  const contenedor = document.getElementById('contenedor-propiedades');
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Cargando propiedades...</p>';
+
+  try {
+    const snapshot = await db.collection('propiedades')
+                             .where('tipo', '==', tipoFiltro)
+                             .get();
+
+    if (snapshot.empty) {
+      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
+      return;
+    }
+
+    contenedor.innerHTML = ''; 
+    propiedadesCargadas = {}; // Limpiamos el objeto por las dudas
+
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      propiedadesCargadas[doc.id] = p; // Guardamos la info para usarla en el detalle
+      
+      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+      const precioFormateado = Number(p.precio).toLocaleString('es-AR');
+      
+      let detalles = `📍 ${p.zona}<br>`;
+      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
+      if (p.dormitorios) detalles += `🛏 ${p.dormitorios} dormitorios<br>`;
+      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+      if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
+
+      const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
+
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'card';
+      tarjeta.innerHTML = `
+        <div class="card-img"><img src="${foto}" alt="${p.titulo}"></div>
+        <div class="card-body">
+          <div class="tag">${p.operacion}</div>
+          <h3>${p.titulo}</h3>
+          <div class="info">${detalles}</div>
+          <div class="precio">${p.moneda} ${precioFormateado}</div>
+          <div class="btns">
+            <button class="btn btn-rojo" onclick="window.open('https://wa.me/5491122947971?text=${mensajeWsp}', '_blank'); event.stopPropagation();">Consultar</button>
+            <button class="btn btn-outline" onclick="mostrarDetalleArquitectura('${doc.id}')">Ver más</button>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(tarjeta);
+    });
+
+  } catch (error) {
+    console.error("Error al cargar Firebase:", error);
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--rojo);">Ocurrió un error al cargar las propiedades.</p>';
+  }
+}
+
+// ESTA ES LA FUNCIÓN NUEVA QUE ARMA EL DISEÑO DE LA IMAGEN
+function mostrarDetalleArquitectura(id) {
+  const p = propiedadesCargadas[id];
+  if (!p) return;
+
+  // Ocultamos el listado
+  document.getElementById('vista-listado').style.display = 'none';
+  
+  // Seleccionamos el contenedor nuevo
+  const detalleDiv = document.getElementById('vista-detalle-dinamica');
+  detalleDiv.style.display = 'block';
+
+  // Manejamos las fotos (si no cargaste 5 fotos, no se rompe, solo no muestra las que faltan)
+  const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+  
+  // Construimos el HTML interno siguiendo el diseño arquitectónico
+  let htmlDetalle = `
+    <!-- HERO (Foto Principal) -->
+    <div class="arch-hero">
+      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+      <img src="${fHero}" alt="${p.titulo}">
+    </div>
+
+    <!-- SECCIÓN MEDIA (Texto Izquierda / Plano-Foto Derecha) -->
+    <div class="arch-mid">
+      <div class="arch-text">
+        <h2>${p.titulo} <br><span>${p.moneda} ${Number(p.precio).toLocaleString('es-AR')}</span></h2>
+        <p>${p.descripcion || 'Sin descripción detallada.'}</p>
+        <br>
+        <p style="font-weight: 600;">Ubicación: <span style="color:var(--rojo);">${p.zona}</span></p>
+      </div>
+  `;
+
+  // Si hay una segunda foto (idealmente el plano), la ponemos a la derecha
+  if (p.fotos && p.fotos.length > 1) {
+    htmlDetalle += `
+      <div class="arch-plan">
+        <img src="${p.fotos[1]}" alt="Plano o vista secundaria">
+      </div>
+    `;
+  } else {
+    // Si no hay foto 2, dejamos el espacio vacío
+    htmlDetalle += `<div></div>`;
+  }
+  
+  htmlDetalle += `</div>`; // Cierra arch-mid
+
+  // SECCIÓN INFERIOR (Grilla de 3 imágenes)
+  // Verificamos si hay al menos una foto más para armar la galería de abajo
+  if (p.fotos && p.fotos.length > 2) {
+    htmlDetalle += `<div class="arch-gallery">`;
+    if (p.fotos[2]) htmlDetalle += `<img src="${p.fotos[2]}" alt="Interior 1">`;
+    if (p.fotos[3]) htmlDetalle += `<img src="${p.fotos[3]}" alt="Interior 2">`;
+    if (p.fotos[4]) htmlDetalle += `<img src="${p.fotos[4]}" alt="Interior 3">`;
+    htmlDetalle += `</div>`;
   }
 
-  function volverAlListado() {
-      // Oculta todas las propiedades abiertas
-      const propiedades = document.querySelectorAll('.vista-propiedad');
-      propiedades.forEach(prop => prop.style.display = 'none');
-      // Vuelve a mostrar el listado de casas
-      document.getElementById('vista-listado').style.display = 'block';
-      window.scrollTo(0, 0);
-  }
+  // Agregamos la barra de contacto fija abajo de todo
+  const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}".`);
+  htmlDetalle += `
+    <div class="barra-contacto">
+      <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+      <div class="botones-accion">
+        <a href="https://wa.me/5491122947971?text=${mensajeWsp}" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
+      </div>
+    </div>
+  `;
+
+  detalleDiv.innerHTML = htmlDetalle;
+  
+  // Subimos la pantalla arriba de todo
+  window.scrollTo(0, 0);
+}
+
+function cerrarDetalleArquitectura() {
+  document.getElementById('vista-detalle-dinamica').style.display = 'none';
+  document.getElementById('vista-detalle-dinamica').innerHTML = ''; // Limpiamos
+  document.getElementById('vista-listado').style.display = 'block';
+  window.scrollTo(0, 0);
+}
 </script>
 <script>
 // Cuando la página carga, ejecutamos la búsqueda
