@@ -165,39 +165,54 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 let propiedadesCargadas = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Acá es donde le decimos que SOLO traiga los Departamentos
-  cargarPropiedadesPublicas('Departamento'); 
+  // 1. Leemos si viene una zona específica desde el buscador del inicio
+  const parametros = new URLSearchParams(window.location.search);
+  const zonaBuscada = parametros.get('zona');
+
+  // 2. Buscamos cualquier propiedad que contenga la palabra "departamento"
+  cargarPropiedadesPublicas('departamento', zonaBuscada); 
 });
 
-async function cargarPropiedadesPublicas(tipoFiltro) {
+async function cargarPropiedadesPublicas(tipoFiltro, zonaFiltro = null) {
   const contenedor = document.getElementById('contenedor-propiedades');
-  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Cargando propiedades...</p>';
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Buscando propiedades...</p>';
 
   try {
-    const snapshot = await db.collection('propiedades').where('tipo', '==', tipoFiltro).get();
-
-    if (snapshot.empty) {
-      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
-      return;
-    }
+    // Traemos todas las propiedades para filtrarlas "a prueba de errores"
+    const snapshot = await db.collection('propiedades').get();
 
     contenedor.innerHTML = ''; 
     propiedadesCargadas = {}; 
+    let cantidadMostradas = 0;
+
+    // Normalizamos la zona buscada: le sacamos mayúsculas y tildes
+    const zonaBuscadaLimpia = zonaFiltro ? zonaFiltro.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : null;
 
     snapshot.forEach(doc => {
       const p = doc.data();
+      
+      // Limpiamos también lo que viene de la base de datos
+      const tipoPropiedadBase = (p.tipo || '').toLowerCase();
+      const zonaPropiedadBase = (p.zona || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      // 1. Filtro por TIPO (Ej: que incluya "departamento")
+      if (!tipoPropiedadBase.includes(tipoFiltro.toLowerCase())) return;
+
+      // 2. Filtro por ZONA (Si se buscó una zona válida en el inicio)
+      if (zonaBuscadaLimpia && zonaBuscadaLimpia !== "seleccionar zona" && zonaPropiedadBase !== zonaBuscadaLimpia) return;
+
+      cantidadMostradas++;
       propiedadesCargadas[doc.id] = p; 
       
       const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
       const precioFormateado = Number(p.precio).toLocaleString('es-AR');
       
       let detalles = `📍 ${p.zona}<br>`;
-      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
-      if (p.dormitorios) detalles += `🛏 ${p.dormitorios} dormitorios<br>`;
-      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
       if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
+      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
 
-      const mensajeWsp = encodeURIComponent(`Hola, me interesa el departamento "${p.titulo}" que vi en la web.`);
+      const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
 
       const tarjeta = document.createElement('div');
       tarjeta.className = 'card';
@@ -217,9 +232,13 @@ async function cargarPropiedadesPublicas(tipoFiltro) {
       contenedor.appendChild(tarjeta);
     });
 
+    if (cantidadMostradas === 0) {
+        contenedor.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Por el momento no hay propiedades publicadas con estos filtros.</p>`;
+    }
+
   } catch (error) {
     console.error("Error al cargar Firebase:", error);
-    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error al cargar los departamentos.</p>';
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #C1121F;">Ocurrió un error de conexión.</p>';
   }
 }
 
@@ -230,62 +249,40 @@ function mostrarDetalleArquitectura(id) {
   document.getElementById('vista-listado').style.display = 'none';
   const detalleDiv = document.getElementById('vista-detalle-dinamica');
   detalleDiv.style.display = 'block';
-  
   window.scrollTo(0, 0);
 
   const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
-  
   let htmlDetalle = `
     <div class="arch-hero">
-      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()">
-        <i class="fas fa-arrow-left"></i> Volver
-      </button>
+      <button class="arch-btn-volver" onclick="cerrarDetalleArquitectura()"><i class="fas fa-arrow-left"></i> Volver</button>
       <img src="${fHero}" alt="${p.titulo}">
     </div>
-
     <div class="arch-mid">
       <div class="arch-text">
         <h2>${p.titulo} <br><span style="color:#C1121F;">${p.moneda} ${Number(p.precio).toLocaleString('es-AR')}</span></h2>
-        <p>${p.descripcion || 'Sin descripción detallada.'}</p>
-        <br>
+        <p>${p.descripcion || 'Sin descripción detallada.'}</p><br>
         <p style="font-weight: 600;">Ubicación: <span style="color:#C1121F;">${p.zona}</span></p>
       </div>
   `;
 
-  if (p.plano) {
-    htmlDetalle += `
-      <div class="arch-plan">
-        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
-      </div>
-    `;
-  } else {
-    htmlDetalle += `<div></div>`;
-  }
-  
+  if (p.plano) { htmlDetalle += `<div class="arch-plan"><img src="${p.plano}" style="object-fit: contain;"></div>`; }
+  else { htmlDetalle += `<div></div>`; }
   htmlDetalle += `</div>`; 
 
   if (p.fotos && p.fotos.length > 1) {
     htmlDetalle += `<div class="arch-gallery">`;
-    for (let i = 1; i < p.fotos.length; i++) {
-      htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
-    }
+    for (let i = 1; i < p.fotos.length; i++) { htmlDetalle += `<img src="${p.fotos[i]}">`; }
     htmlDetalle += `</div>`;
   }
 
   if (p.mapa) {
-    htmlDetalle += `
-      <div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;">
-        <h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: #FFF;">Ubicación en el Mapa</h3>
-    `;
-    if(p.mapa.includes('<iframe')) {
-      htmlDetalle += `<div class="mapa-container" style="width:100%; border-radius:8px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);">${p.mapa}</div>`;
-    } else {
-      htmlDetalle += `<a href="${p.mapa}" target="_blank" class="btn-accion" style="background:transparent; border:2px solid #C1121F; color:#C1121F; display:inline-block; padding: 15px 30px;">Abrir Google Maps</a>`;
-    }
+    htmlDetalle += `<div style="max-width: 1300px; margin: 60px auto; padding: 0 5%;"><h3 style="font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; color: #FFF;">Ubicación en el Mapa</h3>`;
+    if(p.mapa.includes('<iframe')) { htmlDetalle += `<div class="mapa-container" style="width:100%; border-radius:8px; overflow:hidden; border: 1px solid rgba(255,255,255,0.05);">${p.mapa}</div>`; } 
+    else { htmlDetalle += `<a href="${p.mapa}" target="_blank" class="btn-accion" style="background:transparent; border:2px solid #C1121F; color:#C1121F; display:inline-block; padding: 15px 30px;">Abrir Google Maps</a>`; }
     htmlDetalle += `</div>`;
   }
 
-  const mensajeWsp = encodeURIComponent(`Hola, me interesa el departamento "${p.titulo}".`);
+  const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}".`);
   htmlDetalle += `
     <div class="barra-contacto">
       <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
@@ -295,15 +292,9 @@ function mostrarDetalleArquitectura(id) {
       </div>
     </div>
   `;
-
   detalleDiv.innerHTML = htmlDetalle;
-  
   const iframeMapa = detalleDiv.querySelector('.mapa-container iframe');
-  if(iframeMapa) {
-    iframeMapa.style.width = '100%';
-    iframeMapa.style.height = '450px';
-    iframeMapa.style.border = 'none';
-  }
+  if(iframeMapa) { iframeMapa.style.width = '100%'; iframeMapa.style.height = '450px'; iframeMapa.style.border = 'none'; }
 }
 
 function cerrarDetalleArquitectura() {
