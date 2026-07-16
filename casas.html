@@ -110,6 +110,10 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 @media(max-width:1000px){ .grid{ grid-template-columns:repeat(2,1fr); } .filtro-box{ grid-template-columns:1fr 1fr; } .contenedor-plano { grid-template-columns: 1fr; gap: 40px; } }
 @media(max-width:768px){ nav{ display:none; } .grid{ grid-template-columns:1fr; } .filtro-box{ grid-template-columns:1fr; } .hero-propiedad h1 { font-size: 28px; } .barra-contacto { flex-direction: column; gap: 15px; text-align: center; } .botones-accion { width: 100%; } .btn-accion { flex: 1; text-align: center; } }
 </style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 </head>
 
 <body>
@@ -144,54 +148,13 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
     </div>
   </section>
 
-  <section class="propiedades">
-    <div class="grid">
+ <section class="propiedades">
+  <!-- Agregamos el id="contenedor-propiedades" y dejamos vacío adentro -->
+  <div class="grid" id="contenedor-propiedades">
       
-      <div class="card" onclick="abrirPropiedad('propiedad-1')">
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop"></div>
-        <div class="card-body">
-          <div class="tag">Venta</div>
-          <h3>Casa Moderna con Jardín</h3>
-          <div class="info">📍 Castelar Norte<br>🛏 4 dormitorios<br>🚗 Cochera doble<br>🌳 Parque y pileta</div>
-          <div class="precio">USD 320.000</div>
-          <div class="btns">
-            <button class="btn btn-rojo" onclick="event.stopPropagation(); window.open('https://wa.me/5491100000000', '_blank');">Consultar</button>
-            <button class="btn btn-outline">Ver más</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" onclick="abrirPropiedad('propiedad-2')">
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1200&auto=format&fit=crop"></div>
-        <div class="card-body">
-          <div class="tag">Alquiler</div>
-          <h3>Chalet Familiar</h3>
-          <div class="info">📍 Ituzaingó<br>🛏 3 dormitorios<br>🍖 Quincho completo<br>📐 210 m²</div>
-          <div class="precio">$1.200.000</div>
-          <div class="btns">
-            <button class="btn btn-rojo" onclick="event.stopPropagation(); window.open('https://wa.me/5491100000000', '_blank');">Consultar</button>
-            <button class="btn btn-outline">Ver más</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" onclick="abrirPropiedad('propiedad-3')">
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=1200&auto=format&fit=crop"></div>
-        <div class="card-body">
-          <div class="tag">Venta</div>
-          <h3>Casa Premium</h3>
-          <div class="info">📍 Barrio Cerrado<br>🛏 5 dormitorios<br>🏊 Piscina climatizada<br>🚗 Garage para 3 autos</div>
-          <div class="precio">USD 580.000</div>
-          <div class="btns">
-            <button class="btn btn-rojo" onclick="event.stopPropagation(); window.open('https://wa.me/5491100000000', '_blank');">Consultar</button>
-            <button class="btn btn-outline">Ver más</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-  
+  </div>
+</section>
+    
   <footer id="contacto">© 2026 Mazoud Propiedades — Todos los derechos reservados.</footer>
 </div>
 
@@ -327,6 +290,73 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
       window.scrollTo(0, 0);
   }
 </script>
+<script>
+// Cuando la página carga, ejecutamos la búsqueda
+document.addEventListener('DOMContentLoaded', () => {
+  // ATENCIÓN: Cambiar 'Casa / PH' por 'Departamento' o 'Local' según la página
+  cargarPropiedadesPublicas('Casa / PH'); 
+});
 
+async function cargarPropiedadesPublicas(tipoFiltro) {
+  const contenedor = document.getElementById('contenedor-propiedades');
+  contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Cargando propiedades...</p>';
+
+  try {
+    // Pedimos a Firestore las propiedades ordenadas por fecha
+    const snapshot = await db.collection('propiedades')
+                             .where('tipo', '==', tipoFiltro)
+                             .get();
+
+    if (snapshot.empty) {
+      contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--texto);">Por el momento no hay propiedades publicadas en esta categoría.</p>';
+      return;
+    }
+
+    contenedor.innerHTML = ''; // Limpiamos el texto de "Cargando"
+
+    snapshot.forEach(doc => {
+      const p = doc.data();
+      
+      // Tomamos la primera foto de Cloudinary, si no hay ponemos una gris
+      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200&auto=format&fit=crop';
+      
+      // Formateamos el precio (le pone los puntitos de miles)
+      const precioFormateado = Number(p.precio).toLocaleString('es-AR');
+      
+      // Armamos la info de detalles inteligentemente (si no tiene baños cargados, no lo muestra)
+      let detalles = `📍 ${p.zona}<br>`;
+      if (p.ambientes) detalles += `🚪 ${p.ambientes} ambientes<br>`;
+      if (p.dormitorios) detalles += `🛏 ${p.dormitorios} dormitorios<br>`;
+      if (p.banos) detalles += `🚿 ${p.banos} baños<br>`;
+      if (p.m2Cubiertos) detalles += `📐 ${p.m2Cubiertos} m²<br>`;
+
+      // Armamos el mensajito automático para WhatsApp
+      const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
+
+      // Creamos la tarjeta HTML respetando tu diseño exacto
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'card';
+      tarjeta.innerHTML = `
+        <div class="card-img"><img src="${foto}" alt="${p.titulo}"></div>
+        <div class="card-body">
+          <div class="tag">${p.operacion}</div>
+          <h3>${p.titulo}</h3>
+          <div class="info">${detalles}</div>
+          <div class="precio">${p.moneda} ${precioFormateado}</div>
+          <div class="btns">
+            <button class="btn btn-rojo" onclick="window.open('https://wa.me/5491122947971?text=${mensajeWsp}', '_blank'); event.stopPropagation();">Consultar</button>
+            <button class="btn btn-outline" onclick="alert('Esta es una versión simplificada. El detalle completo de los planos requiere una conexión adicional.')">Ver más</button>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(tarjeta);
+    });
+
+  } catch (error) {
+    console.error("Error al cargar Firebase:", error);
+    contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--rojo);">Ocurrió un error al cargar las propiedades.</p>';
+  }
+}
+</script>
 </body>
 </html>
