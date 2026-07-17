@@ -199,10 +199,10 @@ async function cargarYFiltrarPropiedades() {
   contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Buscando propiedades...</p>';
 
   try {
-    const snapshot = await db.collection('propiedades')
-                             .where('tipo', '==', tipoFiltro)
-                             .where('estado', '==', 'publicado') // <-- ACÁ ESTÁ LA MAGIA
-                             .get();
+  const snapshot = await db.collection('propiedades')
+                         .where('tipo', '==', 'Casa / PH') // ACÁ ESTÁ LA SOLUCIÓN
+                         .where('estado', '==', 'publicado')
+                         .get();
     propiedadesCargadas = {}; 
 
     // Solo guardamos en memoria las que correspondan a esta página
