@@ -210,7 +210,10 @@ async function cargarYFiltrarPropiedades() {
   contenedor.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: rgba(255,255,255,0.7);">Buscando propiedades...</p>';
 
   try {
-    const snapshot = await db.collection('propiedades').get();
+    const snapshot = await db.collection('propiedades')
+                            .where('tipo', '==', 'Departamento') 
+                            .where('estado', '==', 'publicado') // <-- Agregás esta línea
+                            .get();
     propiedadesCargadas = {}; 
 
     // Solo guardamos en memoria las que correspondan a esta página
