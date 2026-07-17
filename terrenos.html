@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terrenos y Lotes | Mazoud Propiedades</title>
+<link rel="icon" type="image/png" href="logoinmo.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script> <!-- Asegurate de tener este archivo en tu carpeta -->
+
+<style>
+  /* ── BASE ESTILOS ── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --negro: #0D0D0D; --rojo: #C1121F; --rojo-hover: #a50e1a;
+    --gris: #2B2B2B; --blanco: #FFFFFF;
+    --texto-muted: rgba(255,255,255,0.55); --border: rgba(255,255,255,0.1);
+  }
+  body { font-family: 'Montserrat', sans-serif; background: var(--negro); color: var(--blanco); overflow-x: hidden; }
+  a { text-decoration: none; color: inherit; }
+  
+  /* ── HEADER BÁSICO ── */
+  header {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    background: rgba(13,13,13,0.96); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(193,18,31,0.25); height: 90px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 5%;
+  }
+  .logo-wrap img { height: 55px; width: auto; }
+  nav { display: flex; gap: 32px; align-items: center; }
+  nav a { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+  nav a:hover { color: var(--rojo); }
+  .btn-volver { background: var(--border); padding: 10px 20px; border-radius: 3px; font-size: 10px; transition: 0.2s; }
+  .btn-volver:hover { background: var(--rojo); color: #fff; }
+
+  /* ── CONTENIDO PRINCIPAL ── */
+  main { padding: 140px 5% 80px; max-width: 1300px; margin: 0 auto; display: flex; gap: 40px; flex-wrap: wrap; }
+  
+  /* ── FILTROS (BARRA LATERAL) ── */
+  .filtros-sidebar { width: 100%; max-width: 280px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 24px; border-radius: 6px; height: fit-content; }
+  .filtros-sidebar h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+  .fg { margin-bottom: 16px; }
+  .fg label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--texto-muted); margin-bottom: 8px; }
+  .fg select, .fg input { width: 100%; background: var(--negro); border: 1px solid var(--border); padding: 12px; color: #fff; font-size: 12px; border-radius: 3px; outline: none; }
+  .fg select:focus, .fg input:focus { border-color: var(--rojo); }
+  .btn-buscar { width: 100%; background: var(--rojo); color: #fff; border: none; padding: 14px; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border-radius: 3px; cursor: pointer; margin-top: 10px; }
+  .btn-buscar:hover { background: var(--rojo-hover); }
+
+  /* ── GRILLA DE PROPIEDADES ── */
+  .prop-container { flex: 1; min-width: 300px; }
+  .prop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .prop-header h1 { font-size: 24px; font-weight: 800; text-transform: uppercase; }
+  .prop-header span { font-size: 12px; color: var(--texto-muted); }
+
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  
+  /* TARJETA DE PROPIEDAD */
+  .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column; }
+  .card:hover { transform: translateY(-5px); border-color: rgba(193,18,31,0.5); }
+  .card-img { width: 100%; height: 200px; object-fit: cover; background: #111; }
+  .card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+  .card-price { font-size: 18px; font-weight: 800; color: var(--rojo); margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; }
+  .card-zona { font-size: 11px; color: var(--texto-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+  
+  .card-features { display: flex; gap: 16px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: auto; }
+  .feat { font-size: 11px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+  
+  .estado-carga { text-align: center; color: var(--texto-muted); font-size: 14px; padding: 40px; grid-column: 1 / -1; }
+  
+  @media (max-width: 768px) {
+    main { flex-direction: column; }
+    .filtros-sidebar { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo-wrap">
+    <img src="logoinmo.png" alt="Mazoud Propiedades">
+  </a>
+  <nav>
+    <a href="index.html" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+  </nav>
+</header>
+
+<main>
+  <!-- BARRA DE FILTROS -->
+  <aside class="filtros-sidebar">
+    <h3>Filtrar búsqueda</h3>
+    <div class="fg">
+      <label>Operación</label>
+      <select id="filtro-operacion">
+        <option value="">Todas</option>
+        <option value="Venta">Venta</option>
+        <option value="Alquiler">Alquiler</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Zona</label>
+      <select id="filtro-zona">
+        <option value="">Todas las zonas</option>
+        <option value="Merlo">Merlo</option>
+        <option value="Morón">Morón</option>
+        <option value="S.A. Padua">S.A. Padua</option>
+        <option value="Ituzaingó">Ituzaingó</option>
+        <option value="Castelar">Castelar</option>
+        <option value="Moreno">Moreno</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Precio Máximo (USD)</label>
+      <input type="number" id="filtro-precio" placeholder="Ej: 100000">
+    </div>
+    <button class="btn-buscar" onclick="cargarYFiltrarPropiedades()">Aplicar Filtros</button>
+  </aside>
+
+  <!-- LISTADO DE PROPIEDADES -->
+  <section class="prop-container">
+    <div class="prop-header">
+      <h1>Terrenos y Lotes</h1>
+      <span id="contador-resultados">Cargando...</span>
+    </div>
+    
+    <div id="lista-propiedades" class="prop-grid">
+      <div class="estado-carga"><i class="fas fa-spinner fa-spin"></i> Buscando propiedades...</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // 1. Leer si vino una zona elegida desde la página de inicio (URL)
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const zonaDesdeInicio = urlParams.get('zona');
+    if (zonaDesdeInicio) {
+      document.getElementById('filtro-zona').value = zonaDesdeInicio;
+    }
+    // Cargar propiedades al entrar
+    cargarYFiltrarPropiedades();
+  };
+
+  // 2. Función principal para cargar y filtrar desde Firebase
+  async function cargarYFiltrarPropiedades() {
+    const contenedor = document.getElementById('lista-propiedades');
+    const contador = document.getElementById('contador-resultados');
+    
+    // Mostramos estado de carga
+    contenedor.innerHTML = '<div class="estado-carga"><i class="fas fa-spinner fa-spin"></i> Buscando propiedades...</div>';
+
+    const valOperacion = document.getElementById('filtro-operacion').value;
+    const valZona = document.getElementById('filtro-zona').value;
+    const valPrecioMax = Number(document.getElementById('filtro-precio').value);
+
+    try {
+      // LA MAGIA DE LA SEGURIDAD ESTÁ ACÁ
+      let query = db.collection('propiedades')
+                    .where('tipo', '==', 'Terreno')
+                    .where('estado', '==', 'publicado');
+
+      // Agregamos filtros extra si el usuario seleccionó alguno
+      if (valOperacion) query = query.where('operacion', '==', valOperacion);
+      if (valZona) query = query.where('zona', '==', valZona);
+
+      const snapshot = await query.get();
+      contenedor.innerHTML = ''; // Limpiamos el mensaje de carga
+
+      let resultadosValidos = 0;
+
+      if (snapshot.empty) {
+        contenedor.innerHTML = '<div class="estado-carga">No se encontraron terrenos con esos filtros.</div>';
+        contador.textContent = '0 resultados';
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const p = doc.data();
+        
+        // Filtro manual de precio (Firebase a veces se complica con rangos numéricos si hay otros wheres)
+        if (valPrecioMax && valPrecioMax > 0) {
+          if (p.precio > valPrecioMax) return; // Si es más caro, lo saltea
+        }
+
+        resultadosValidos++;
+
+        // Armamos la tarjeta
+        const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://via.placeholder.com/400x300/111/444?text=Sin+Foto';
+        const m2Text = p.m2Totales ? `${p.m2Totales} m²` : '-';
+        
+        const cardHTML = `
+          <div class="card" onclick="verDetalle('${doc.id}')">
+            <img src="${foto}" alt="${p.titulo}" class="card-img">
+            <div class="card-body">
+              <div class="card-price">${p.moneda || 'USD'} ${Number(p.precio).toLocaleString('es-AR')}</div>
+              <h3 class="card-title">${p.titulo}</h3>
+              <div class="card-zona"><i class="fas fa-map-marker-alt"></i> ${p.zona}</div>
+              <div class="card-features">
+                <span class="feat" title="Superficie total"><i class="fas fa-vector-square"></i> ${m2Text}</span>
+                <span class="feat" title="Operación"><i class="fas fa-tag"></i> ${p.operacion}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        contenedor.innerHTML += cardHTML;
+      });
+
+      contador.textContent = `${resultadosValidos} resultado(s)`;
+      if (resultadosValidos === 0) {
+         contenedor.innerHTML = '<div class="estado-carga">No se encontraron terrenos en ese rango de precio.</div>';
+      }
+
+    } catch (error) {
+      console.error("Error cargando terrenos:", error);
+      contenedor.innerHTML = '<div class="estado-carga" style="color:var(--rojo);">Ocurrió un error al cargar. Revisá la consola. (Recordá que puede pedirte crear un índice en Firebase).</div>';
+    }
+  }
+
+  // 3. Función para ir a la vista de detalle de la propiedad
+  function verDetalle(id) {
+    // Si tenés una página de detalle genérica, redirigís ahí pasándole el ID
+    window.location.href = `detalle.html?id=${id}`;
+  }
+</script>
+</body>
+</html>
