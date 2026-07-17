@@ -34,7 +34,7 @@ a{ text-decoration:none; color:inherit; }
   nav a:hover::after, nav a.activo::after { width: 100%; }
 
 /* VISTA LISTADO */
-.hero{ min-height:55vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:160px 5% 100px; background: linear-gradient(rgba(0,0,0,0.72),rgba(0,0,0,0.82)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1400&auto=format&fit=crop') center/cover; }
+.hero{ min-height:55vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:160px 5% 100px; background: linear-gradient(rgba(0,0,0,0.72),rgba(0,0,0,0.82)), url('https://images.unsplash.com/photo-1774697443203-0f54409d1613?q=80&w=1400&auto=format&fit=crop') center/cover; }
 .hero-content h1{ font-size:clamp(42px,7vw,80px); font-weight:900; text-transform:uppercase; letter-spacing:2px; margin-bottom:18px; }
 .hero-content h1 span{ color:var(--rojo); }
 .hero-content p{ color:var(--texto); font-size:15px; max-width:650px; margin:auto; line-height:1.8; }
@@ -68,6 +68,7 @@ a{ text-decoration:none; color:inherit; }
 /* VISTA DETALLE DINAMICA */
 #vista-detalle-dinamica { display: none; padding-bottom: 80px; }
 
+/* Acá está el arreglo de la foto principal */
 .arch-hero { width: 100%; height: 60vh; min-height: 400px; margin-top: 90px; position: relative; background-color: var(--negro); display: flex; align-items: center; justify-content: center; }
 .arch-hero img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -116,9 +117,11 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
     <a href="index.html">Inicio</a>
     <a href="departamentos.html">Departamentos</a>
     <a href="casas.html">Casas</a>
-    <a href="locales.html">Locales</a>
     <a class="activo" onclick="cerrarDetalleArquitectura()">Terrenos</a>
-    <a href="otros.html">Otros</a>
+    <a href="locales.html">Locales</a>
+    <a href="articulos.html">Artículos</a>
+    <a href="tasaciones.html">Tasaciones</a>
+    <a href="contacto.html">Contacto</a>
   </nav>
 </header>
 
@@ -126,7 +129,7 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
   <section class="hero">
     <div class="hero-content">
       <h1>Terrenos y<br><span>Lotes</span></h1>
-      <p>Encontrá el espacio ideal para construir tu próximo proyecto o inversión en las mejores ubicaciones.</p>
+      <p>Invertí en el terreno ideal para tu próximo proyecto. Lotes con excelente ubicación y gran potencial de construcción en las mejores zonas.</p>
     </div>
   </section>
 
@@ -152,7 +155,7 @@ footer{ padding:45px 5%; text-align:center; border-top:1px solid rgba(255,255,25
 let propiedadesCargadas = {};
 
 document.addEventListener('DOMContentLoaded', () => {
-  cargarPropiedadesPublicas('Terreno'); 
+  cargarPropiedadesPublicas('Terreno / Lote'); 
 });
 
 async function cargarPropiedadesPublicas(tipoFiltro) {
@@ -174,13 +177,16 @@ async function cargarPropiedadesPublicas(tipoFiltro) {
       const p = doc.data();
       propiedadesCargadas[doc.id] = p; 
       
-      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+      const foto = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1773299567657-a4bf83503ce5?q=80&w=1200&auto=format&fit=crop';
       const precioFormateado = Number(p.precio).toLocaleString('es-AR');
       
       let detalles = `📍 ${p.zona}<br>`;
-      if (p.m2Totales) detalles += `📐 ${p.m2Totales} m² totales<br>`;
+      if (p.m2Terreno) detalles += `📐 ${p.m2Terreno} m² totales<br>`;
+      if (p.frente && p.fondo) detalles += `📏 ${p.frente}m x ${p.fondo}m<br>`;
+      if (p.zonificacion) detalles += `🏗️ ${p.zonificacion}<br>`;
+      if (p.servicios) detalles += `🔌 ${p.servicios}<br>`;
 
-      const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}" que vi en la web.`);
+      const mensajeWsp = encodeURIComponent(`Hola, me interesa el terreno "${p.titulo}" que vi en la web.`);
 
       const tarjeta = document.createElement('div');
       tarjeta.className = 'card';
@@ -210,13 +216,15 @@ function mostrarDetalleArquitectura(id) {
   const p = propiedadesCargadas[id];
   if (!p) return;
 
+  // Escondemos la lista y mostramos el detalle
   document.getElementById('vista-listado').style.display = 'none';
   const detalleDiv = document.getElementById('vista-detalle-dinamica');
   detalleDiv.style.display = 'block';
   
+  // ¡Este es el arreglo para la pantalla negra! Obliga al navegador a subir a ver el terreno
   window.scrollTo(0, 0);
 
-  const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200';
+  const fHero = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : 'https://images.unsplash.com/photo-1773299567657-a4bf83503ce5?q=80&w=1200&auto=format&fit=crop';
   
   let htmlDetalle = `
     <div class="arch-hero">
@@ -232,13 +240,15 @@ function mostrarDetalleArquitectura(id) {
         <p>${p.descripcion || 'Sin descripción detallada.'}</p>
         <br>
         <p style="font-weight: 600;">Ubicación: <span style="color:#C1121F;">${p.zona}</span></p>
+        ${p.m2Terreno ? `<p style="font-weight: 600; margin-top: 8px;">Superficie: <span style="color:#C1121F;">${p.m2Terreno} m²</span></p>` : ''}
       </div>
   `;
 
+  // ¡Acá está el arreglo del plano! Ahora usa p.plano en lugar de fotos[1]
   if (p.plano) {
     htmlDetalle += `
       <div class="arch-plan">
-        <img src="${p.plano}" alt="Plano de la propiedad" style="object-fit: contain;">
+        <img src="${p.plano}" alt="Plano de mensura del terreno" style="object-fit: contain;">
       </div>
     `;
   } else {
@@ -247,10 +257,11 @@ function mostrarDetalleArquitectura(id) {
   
   htmlDetalle += `</div>`; 
 
+  // Galería infinita (ahora acomoda solitas hasta 10 fotos o las que le subas)
   if (p.fotos && p.fotos.length > 1) {
     htmlDetalle += `<div class="arch-gallery">`;
     for (let i = 1; i < p.fotos.length; i++) {
-      htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista interior">`;
+      htmlDetalle += `<img src="${p.fotos[i]}" alt="Vista del terreno">`;
     }
     htmlDetalle += `</div>`;
   }
@@ -268,10 +279,10 @@ function mostrarDetalleArquitectura(id) {
     htmlDetalle += `</div>`;
   }
 
-  const mensajeWsp = encodeURIComponent(`Hola, me interesa la propiedad "${p.titulo}".`);
+  const mensajeWsp = encodeURIComponent(`Hola, me interesa el terreno "${p.titulo}".`);
   htmlDetalle += `
     <div class="barra-contacto">
-      <p>¿Te interesa esta propiedad? Hablá con un asesor.</p>
+      <p>¿Te interesa este terreno? Hablá con un asesor.</p>
       <div class="botones-accion">
         <a href="https://wa.me/5491122947971?text=${mensajeWsp}" target="_blank" class="btn-accion btn-wsp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
         <a href="contacto.html" class="btn-accion btn-agendar">Agendar Visita</a>
