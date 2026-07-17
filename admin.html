@@ -105,12 +105,17 @@
     font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase;
     padding:3px 8px; border-radius:3px; margin-top:6px;
   }
+  .tag.pendiente { background: #f39c12; color: #fff; }
+  
   .prop-item .acciones { display:flex; flex-direction:column; gap:8px; }
   .btn-icon {
     background:transparent; border:1px solid var(--border); color:#fff; width:34px; height:34px;
     border-radius:4px; font-size:13px; cursor:pointer;
   }
   .btn-icon:hover { border-color:var(--rojo); color:var(--rojo); }
+  .btn-aprobar { border-color: #5bd17a; color: #5bd17a; }
+  .btn-aprobar:hover { background: #5bd17a; color: #000; }
+  
   #lista-vacia { color:var(--texto-muted); font-size:13px; text-align:center; padding:30px 0; }
 </style>
 </head>
@@ -137,7 +142,7 @@
 <!-- ============ PANEL ============ -->
 <div id="panel">
   <header class="admin-header">
-    <h2>Panel de Propiedades</h2>
+    <h2>Panel de Propiedades <span id="rol-badge" style="margin-left: 10px; background: var(--rojo); padding: 3px 8px; border-radius: 3px; color: #fff; font-size: 10px;"></span></h2>
     <div style="display:flex; align-items:center; gap:16px;">
       <span id="user-email"></span>
       <button id="logout-btn" onclick="cerrarSesion()">Salir</button>
@@ -208,7 +213,7 @@
 
       <div class="grid2">
         <div class="fg"><label>m² totales</label><input type="number" id="f-m2tot" placeholder="Ej: 70"></div>
-        <div class="fg"><label>Antigüedad (años)</label><input type="number" id="f-m2tot" placeholder="Ej: 5"></div>
+        <div class="fg"><label>Antigüedad (años)</label><input type="number" id="f-antiguedad" placeholder="Ej: 5"></div>
       </div>
 
       <div class="check-row">
@@ -257,11 +262,29 @@
 </div>
 
 <script>
+// --- SISTEMA DE ROLES ---
+// Acá agregás los mails de los dueños separados por coma
+const correosDuenos = ['romazoud@gmail.com']; 
+let esDueno = false;
+
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('panel').style.display = 'block';
     document.getElementById('user-email').textContent = user.email;
+    
+    // Verificamos si el usuario actual está en la lista de dueños
+    esDueno = correosDuenos.includes(user.email);
+    
+    // Cambiamos la interfaz según el rol
+    if (esDueno) {
+      document.getElementById('rol-badge').textContent = 'ADMIN';
+      document.getElementById('btn-guardar').textContent = 'Publicar propiedad';
+    } else {
+      document.getElementById('rol-badge').textContent = 'EMPLEADO';
+      document.getElementById('btn-guardar').textContent = 'Enviar a revisión';
+    }
+
     cargarPropiedades();
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -313,7 +336,9 @@ function limpiarFormulario() {
   archivosSeleccionados = [];
   document.getElementById('edit-id').value = '';
   document.getElementById('form-title').textContent = 'Cargar nueva propiedad';
-  document.getElementById('btn-guardar').textContent = 'Publicar propiedad';
+  
+  // Restaurar el botón según el rol
+  document.getElementById('btn-guardar').textContent = esDueno ? 'Publicar propiedad' : 'Enviar a revisión';
   document.getElementById('btn-cancelar-edicion').style.display = 'none';
 }
 
@@ -358,7 +383,9 @@ async function guardarPropiedad() {
     mapa: document.getElementById('f-mapa').value.trim(),
     destacada: document.getElementById('f-destacada').checked,
     actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
-    cargadoPor: auth.currentUser.email
+    cargadoPor: auth.currentUser.email,
+    // ASIGNAMOS ESTADO SEGÚN ROL
+    estado: esDueno ? 'publicado' : 'pendiente'
   };
 
   try {
@@ -382,7 +409,7 @@ async function guardarPropiedad() {
       }
     }
 
-    // 2. Subir el PLANO a Cloudinary (¡Esta es la parte nueva!)
+    // 2. Subir el PLANO a Cloudinary
     const inputPlano = document.getElementById('f-plano');
     if (inputPlano.files.length > 0) {
       const formDataPlano = new FormData();
@@ -397,7 +424,7 @@ async function guardarPropiedad() {
     if (!docId) {
       datos.creadoEn = firebase.firestore.FieldValue.serverTimestamp();
       datos.fotos = urlsFotosNuevas; 
-      if (urlPlanoNuevo) datos.plano = urlPlanoNuevo; // Guarda el plano independiente
+      if (urlPlanoNuevo) datos.plano = urlPlanoNuevo; 
       const nuevoDoc = await db.collection('propiedades').add(datos);
       docId = nuevoDoc.id;
     } else {
@@ -406,11 +433,15 @@ async function guardarPropiedad() {
       const fotosExistentes = docSnap.data().fotos || [];
       datos.fotos = fotosExistentes.concat(urlsFotosNuevas);
       if (urlPlanoNuevo) datos.plano = urlPlanoNuevo;
+      
+      // Si estamos editando y somos empleados, forzamos que vuelva a estado pendiente
+      if (!esDueno) datos.estado = 'pendiente';
+      
       await docRef.update(datos);
     }
 
     msg.className = 'ok';
-    msg.textContent = editId ? 'Propiedad actualizada.' : 'Propiedad publicada.';
+    msg.textContent = editId ? 'Propiedad actualizada.' : (esDueno ? 'Propiedad publicada.' : 'Propiedad enviada a revisión.');
     limpiarFormulario();
     cargarPropiedades();
 
@@ -420,9 +451,10 @@ async function guardarPropiedad() {
     msg.textContent = 'Ocurrió un error al guardar. Revisá la consola.';
   } finally {
     btn.disabled = false;
-    btn.textContent = editId ? 'Guardar cambios' : 'Publicar propiedad';
+    btn.textContent = editId ? 'Guardar cambios' : (esDueno ? 'Publicar propiedad' : 'Enviar a revisión');
   }
 }
+
 function cargarPropiedades() {
   db.collection('propiedades').orderBy('creadoEn', 'desc').onSnapshot(snapshot => {
     const cont = document.getElementById('lista-propiedades');
@@ -436,6 +468,23 @@ function cargarPropiedades() {
     snapshot.forEach(doc => {
       const p = doc.data();
       const foto = (p.fotos && p.fotos[0]) || '';
+      
+      // Armar la etiqueta de estado
+      const esPendiente = p.estado === 'pendiente';
+      const etiquetaEstado = esPendiente 
+        ? `<span class="tag pendiente"><i class="fas fa-clock"></i> Pendiente</span>`
+        : `<span class="tag"><i class="fas fa-check"></i> Publicado</span>`;
+
+      // Armar botones (Si sos dueño y está pendiente, ves el botón de aprobar)
+      let botonesAccion = '';
+      if (esDueno && esPendiente) {
+        botonesAccion += `<button class="btn-icon btn-aprobar" title="Aprobar y Publicar" onclick="aprobarPropiedad('${doc.id}')"><i class="fas fa-check"></i></button>`;
+      }
+      botonesAccion += `
+        <button class="btn-icon" title="Editar" onclick="editarPropiedad('${doc.id}')"><i class="fas fa-pen"></i></button>
+        <button class="btn-icon" title="Borrar" onclick="borrarPropiedad('${doc.id}')"><i class="fas fa-trash"></i></button>
+      `;
+
       const div = document.createElement('div');
       div.className = 'prop-item';
       div.innerHTML = `
@@ -444,15 +493,25 @@ function cargarPropiedades() {
           <h4>${p.titulo}</h4>
           <p>${p.zona} · ${p.moneda} ${Number(p.precio).toLocaleString('es-AR')}</p>
           <span class="tag">${p.tipo} · ${p.operacion}</span>
+          ${etiquetaEstado}
         </div>
         <div class="acciones">
-          <button class="btn-icon" title="Editar" onclick="editarPropiedad('${doc.id}')"><i class="fas fa-pen"></i></button>
-          <button class="btn-icon" title="Borrar" onclick="borrarPropiedad('${doc.id}')"><i class="fas fa-trash"></i></button>
+          ${botonesAccion}
         </div>
       `;
       cont.appendChild(div);
     });
   });
+}
+
+// Nueva función para aprobar propiedades
+async function aprobarPropiedad(id) {
+  if (!confirm('¿Estás seguro de que querés publicar esta propiedad y hacerla visible para todos?')) return;
+  try { 
+    await db.collection('propiedades').doc(id).update({ estado: 'publicado' }); 
+  } catch (err) { 
+    console.error(err); alert('Ocurrió un error al aprobar.'); 
+  }
 }
 
 async function editarPropiedad(id) {
@@ -480,7 +539,7 @@ async function editarPropiedad(id) {
   document.getElementById('f-mapa').value = p.mapa || '';
 
   document.getElementById('form-title').textContent = 'Editando propiedad';
-  document.getElementById('btn-guardar').textContent = 'Guardar cambios';
+  document.getElementById('btn-guardar').textContent = esDueno ? 'Guardar cambios' : 'Actualizar y enviar a revisión';
   document.getElementById('btn-cancelar-edicion').style.display = 'block';
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
