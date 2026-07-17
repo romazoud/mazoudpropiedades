@@ -504,6 +504,8 @@
         <option>Casa</option>
         <option>Local / Oficina</option>
         <option>PH / Dúplex</option>
+        <option>Terreno</option>
+        <option>Otro</option>
       </select>
       <select class="search-input" aria-label="Buscar por zona">
         <option value="">Seleccionar zona</option>
@@ -595,6 +597,40 @@
       </div>
     </a>
 
+    <a href="terrenos.html" class="cat-card"
+       style="background: linear-gradient(145deg, #111511, #0a100a);">
+      <div class="cat-img">🌳</div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </div>
+      <div class="cat-body">
+        <div class="cat-num">04 — Venta</div>
+        <div class="cat-name">Terrenos</div>
+        <div class="cat-sub">Lotes y terrenos para construir</div>
+      </div>
+    </a>
+
+    <a href="otros.html" class="cat-card"
+       style="background: linear-gradient(145deg, #161616, #0d0d0d);">
+      <div class="cat-img">🔑</div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </div>
+      <div class="cat-body">
+        <div class="cat-num">05 — Alquiler / Venta</div>
+        <div class="cat-name">Otros</div>
+        <div class="cat-sub">Cocheras, fondos de comercio, etc.</div>
+      </div>
+    </a>
+
   </div>
 </section>
 
@@ -677,6 +713,7 @@
                 <option value="Casa / PH">Casa / PH</option>
                 <option value="Local / Oficina">Local / Oficina</option>
                 <option value="Terreno">Terreno</option>
+                <option value="Otro">Otro</option>
             </select>
         </div>
         <div class="fg">
@@ -713,6 +750,8 @@
       <a href="departamentos.html">Departamentos</a>
       <a href="casas.html">Casas y PH</a>
       <a href="locales.html">Locales</a>
+      <a href="terrenos.html">Terrenos</a>
+      <a href="otros.html">Otros</a>
       <a href="#tasaciones">Tasaciones</a>
     </div>
     <div class="fc">
@@ -781,7 +820,7 @@
     const zona = document.querySelector('.search-input').value;
 
     if (!tipo || tipo === "Tipo") {
-      alert('Por favor seleccioná el Tipo de propiedad (Casa, Departamento o Local).');
+      alert('Por favor seleccioná el Tipo de propiedad (Casa, Departamento, Local, Terreno u Otro).');
       return;
     }
 
@@ -790,6 +829,8 @@
     if (tipo.includes('Departamento')) urlDestino = 'departamentos.html';
     else if (tipo.includes('Casa') || tipo.includes('PH')) urlDestino = 'casas.html';
     else if (tipo.includes('Local')) urlDestino = 'locales.html';
+    else if (tipo.includes('Terreno')) urlDestino = 'terrenos.html';
+    else if (tipo.includes('Otro')) urlDestino = 'otros.html';
 
     // Si además eligió una zona, se la mandamos en el link (ej: casas.html?zona=Merlo)
     if (zona && zona !== "") {
